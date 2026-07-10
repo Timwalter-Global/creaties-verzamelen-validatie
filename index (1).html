@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Creaties verzamelen · Procesflow huidige situatie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&display=swap">
+<style>
+  :root{
+    --navy:#1B4B89; --mainblue:#195AA6; --blue:#0B78BE; --blue50:#EEF7FC; --blue100:#D6EEF9; --blue200:#A7DDF2;
+    --ink:#424241; --muted:#767675; --line:#B6C9DE; --hairline:#DEE7F0;
+    --amber:#B45309; --ambertekst:#8F5B00; --amberbg:#FCF2D9; --amberrand:#F0DCAA;
+    --green:#1F9D6B; --greentekst:#14724E; --greenbg:#E5F5EE;
+    --red:#D23B3B; --redbg:#FBE7E7;
+    /* Global design-system shadow tokens (soft, cool-blue tinted) */
+    --shadow-xs:0 1px 2px rgba(27,75,137,.06);
+    --shadow-sm:0 2px 6px rgba(27,75,137,.08);
+    --shadow-md:0 6px 18px rgba(27,75,137,.10);
+    --shadow-lg:0 14px 38px rgba(27,75,137,.14);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#fff}
+  body{font-family:'Montserrat','Century Gothic',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:#0B78BE;font-weight:600;text-decoration:none}
+  a:hover{text-decoration:underline;color:#195AA6}
+  button,input,select,textarea{font-family:inherit}
+  [data-el]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+  [data-el]:hover{outline:2px solid #0B78BE;outline-offset:3px;border-radius:14px;filter:drop-shadow(0 6px 14px rgba(27,75,137,.16))}
+  [data-el][data-selected="true"]{outline:3px solid #0B78BE;outline-offset:3px;border-radius:14px}
+  [data-connchip]{transition:box-shadow .12s ease,color .12s ease,border-color .12s ease}
+  [data-connchip]:hover{border-color:#0B78BE !important;color:#0B78BE !important;box-shadow:0 2px 8px rgba(27,75,137,.20)}
+  [data-connchip][data-active="true"]{background:#0B78BE !important;border-color:#0B78BE !important;color:#fff !important}
+  [data-navchip][data-active="true"]{background:#1B4B89 !important;border-color:#1B4B89 !important;color:#fff !important}
+  [data-f2pill]:hover{border-color:#0B78BE !important;color:#0B78BE !important}
+  [data-f2line][data-on="true"]{background:#0B78BE !important}
+  [data-f2tri][data-on="true"]{border-top-color:#0B78BE !important}
+  [data-f2chip][data-on="true"]{background:#0B78BE !important;border-color:#0B78BE !important;color:#fff !important}
+  [data-f2card][data-on="true"]{border-color:#0B78BE !important;box-shadow:0 8px 20px rgba(11,120,190,.15) !important}
+  [data-btn-primary]:hover{background:#1E69C0 !important}
+  [data-vbtn="k"][data-on="true"]{background:#1F9D6B !important;color:#fff !important;border-color:#1F9D6B !important}
+  [data-vbtn="kn"][data-on="true"]{background:#D23B3B !important;color:#fff !important;border-color:#D23B3B !important}
+  :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #5BC4E8;outline-offset:2px}
+  @keyframes glpanel{from{transform:translateX(28px);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes glsheet{from{transform:translateY(60px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  @keyframes glfade{from{opacity:0}to{opacity:1}}
+  @keyframes glspin{to{transform:rotate(360deg)}}
+  /* comment badges toggle via .on so inline display never fights the hidden state */
+  [data-cbadge]{display:none;align-items:center;gap:4px;background:#fff;color:var(--blue);border:1.5px solid var(--blue);font-size:10px;font-weight:700;padding:2.5px 8px;border-radius:999px;box-shadow:var(--shadow-xs)}
+  [data-cbadge].on{display:inline-flex}
+  /* reusable BPMN pieces (exact values from the design) */
+  .rb{font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px;white-space:nowrap}
+  .rb-blue{background:var(--blue50);color:var(--navy);border:1px solid var(--blue200)}
+  .rb-green{background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2}
+  .rb-grey{background:#F4F4F3;color:#575756;border:1px solid #E2E2E1}
+  .el-box{position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center}
+  .el-title{font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4}
+  .kbox{position:relative;z-index:1;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:16px 14px;box-shadow:var(--shadow-xs);text-align:center;display:flex;align-items:center;justify-content:center;min-height:78px}
+  .kbox .el-title{font-size:12.5px}
+  .diamond{position:relative;z-index:1;width:290px;max-width:100%;height:148px}
+  .dm-back{position:absolute;inset:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--navy)}
+  .dm-face{position:absolute;inset:2px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--blue50)}
+  .dm-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;font-weight:600;color:var(--navy);line-height:1.35}
+  [data-branchcnt]{display:none;background:var(--blue);color:#fff;border-radius:999px;min-width:15px;height:15px;font-size:9px;font-weight:700;align-items:center;justify-content:center;padding:0 3px}
+  [data-branchcnt].on{display:inline-flex}
+</style>
+</head>
+<body>
+<div id="inner" style="margin-right:0;transition:margin-right .24s cubic-bezier(.4,0,.2,1)">
+
+  <div id="banner-slot"></div>
+
+  <header data-screen-label="Header" style="padding:28px 16px 20px">
+    <div style="max-width:1128px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div style="min-width:260px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:8px">Fase 1 · As-is validatie · AI Challenge</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h1 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--navy);line-height:1.2">Creaties verzamelen · Procesflow huidige situatie</h1>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.1em;padding:5px 11px;border-radius:999px;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);white-space:nowrap">AS-IS · TER VALIDATIE</span>
+        </div>
+      </div>
+      <button id="btn-overview" data-btn-primary="1" style="display:inline-flex;align-items:center;gap:9px;background:var(--mainblue);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg>
+        <span id="btn-overview-label">Alle reacties (…)</span>
+      </button>
+    </div>
+  </header>
+
+  <div style="padding:0 16px">
+    <div style="max-width:1128px;margin:0 auto">
+      <div style="max-width:840px;font-size:13.5px;line-height:1.7;color:var(--ink)">
+        <p style="margin:0 0 6px"><strong style="color:var(--navy)">Wat dit is.</strong> De huidige werkwijze voor het verzamelen van creaties, van boeking tot livegang, in kaart gebracht met het team.</p>
+        <p style="margin:0 0 6px"><strong style="color:var(--navy)">Wat we vragen.</strong> Loop de flow door, klik op stappen én pijlen voor detailinformatie, geef per onderdeel aan of het klopt en plaats waar nodig een comment.</p>
+        <p style="margin:0;font-size:12.5px;color:var(--muted)">Reacties en namen zijn zichtbaar voor iedereen met de link.</p>
+      </div>
+
+      <div style="margin:20px 0 18px;border:1px solid var(--hairline);border-radius:12px;background:#fff;box-shadow:var(--shadow-xs)">
+        <button id="obs-toggle" aria-expanded="false" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:13px 16px;cursor:pointer;text-align:left;gap:12px">
+          <span style="display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--navy)">Overkoepelende observaties uit de werksessie
+            <span style="font-size:10.5px;font-weight:700;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:2px 8px">4</span>
+          </span>
+          <span id="obs-chev" aria-hidden="true" style="color:var(--blue);font-size:12px;font-weight:700">▼ Uitklappen</span>
+        </button>
+        <div id="obs-body" style="display:none">
+          <div style="padding:2px 18px 14px;animation:glfade .18s ease">
+            <p style="margin:0 0 8px;font-size:12.5px;color:var(--muted)">Vier thema's uit de werksessie, geformuleerd als observaties op het geheel:</p>
+            <ul id="obs-list" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav data-screen-label="Sectienavigatie" style="position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--hairline)">
+    <div style="max-width:1128px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:10px 16px">
+      <button data-navchip="1" data-sec="1" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">1</b>Start en uitvraag</button>
+      <button data-navchip="1" data-sec="2" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">2</b>Tijdigheid en aanlevering</button>
+      <button data-navchip="1" data-sec="3" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">3</b>Ordernummer</button>
+      <button data-navchip="1" data-sec="4" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">4</b>Controle</button>
+      <button data-navchip="1" data-sec="5" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">5</b>Koppeling</button>
+      <button data-navchip="1" data-sec="6" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">6</b>Bevestiging en einde</button>
+    </div>
+  </nav>
+
+  <div style="padding:12px 16px 0">
+    <div style="max-width:1128px;margin:0 auto;border:1px solid var(--hairline);border-radius:12px;background:#fff">
+      <button id="leg-toggle" aria-expanded="false" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:11px 16px;cursor:pointer;text-align:left;gap:12px">
+        <span style="font-size:12.5px;font-weight:700;color:var(--navy)">Legenda · symbolen, rollen en badges</span>
+        <span id="leg-chev" aria-hidden="true" style="color:var(--blue);font-size:12px;font-weight:700">▼ Uitklappen</span>
+      </button>
+      <div id="leg-body" style="display:none">
+        <div style="padding:2px 18px 16px;animation:glfade .18s ease">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px 22px">
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--navy);background:#fff"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Startevent</b><br>Beginpunt van het proces.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:20px;height:20px;border-radius:50%;border:3.5px solid var(--green);background:var(--greenbg)"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Eindevent</b><br>Eindpunt: campagne gaat live.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:32px;height:20px;border-radius:5px;border:1.5px solid var(--navy);background:#fff"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Activiteit</b><br>Een uit te voeren processtap.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:15px;height:15px;transform:rotate(45deg);background:var(--blue50);border:1.5px solid var(--navy);border-radius:2px"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Beslissing</b><br>Keuzemoment (JA/NEE, CORRECT/NIET CORRECT).</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:15px;height:15px;transform:rotate(45deg);background:var(--blue50);border:1.5px solid var(--navy);border-radius:2px"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Routeringsgateway</b><br>Zelfde vorm: routeert naar een van de kanalen.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:32px;height:20px;border-radius:5px;border:1.5px dashed #9A9A99;background:#F4F4F3"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Flow 2 (subproces)</b><br>Buiten scope; opent als pop-up via de NEE- en NIET CORRECT-takken.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><svg width="34" height="12" viewBox="0 0 34 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#7D9BC1" stroke-width="2"></line><path d="M27 1.5 33 6 27 10.5Z" fill="#7D9BC1"></path></svg></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Pijl met labelchip</b><br>Verbinding; klik op de chip of stip om te reageren.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="display:inline-flex;align-items:center;gap:3px;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9px;font-weight:700;padding:2px 6px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 3.5 22 20.5H2Z"></path><path d="M12 10v4.5"></path><path d="M12 17.6h.01"></path></svg>3</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Pijnpuntbadge</b><br>Aantal feitelijke pijnpunten bij dit onderdeel.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="display:inline-flex;align-items:center;gap:3px;background:#fff;color:var(--blue);border:1.5px solid var(--blue);font-size:9px;font-weight:700;padding:2px 6px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg>2</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Commentbadge</b><br>Aantal reacties op dit onderdeel.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span class="rb rb-blue">CM</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">CM</b> · Campagnemanager (rolbadge = uitvoerder).</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span class="rb rb-blue">AM</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">AM</b> · Accountmanager.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span class="rb rb-green">AD OPS</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Ad Ops</b> · Ad Operations, ook wel Digitale Planning.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span class="rb rb-grey">EXTERN</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Extern</b> · Adverteerder, mediabureau, designstudio of klant.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span class="rb rb-blue">GLOBALLER</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Globaller</b> · Collega van Global (AM, CM of designmanager).</span></div>
+          </div>
+          <p style="margin:14px 0 0;font-size:11.5px;color:var(--muted)">De verantwoordelijke is bij elke stap AM/CM, tenzij anders vermeld. De badges op het canvas tonen de uitvoerder. Stemtotalen staan bewust niet op het canvas; je vindt ze in het reactieoverzicht.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bpm-canvas" style="position:relative;margin-top:6px">
+    <div id="arrows-layer" style="position:absolute;top:0;left:0;z-index:1;pointer-events:none"></div>
+    <div id="chips-layer" style="position:absolute;inset:0;z-index:2;pointer-events:none"></div>
+
+    <section id="sec1" data-screen-label="Sectie 1 · Start en uitvraag" style="position:relative;background:#fff;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 1 · Start en uitvraag</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="start" role="button" tabindex="0" aria-label="START: Campagne geboekt en bevestigd" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:9px;width:260px;max-width:100%;padding:4px">
+            <div style="font-size:12.5px;font-weight:600;color:var(--navy);text-align:center;line-height:1.45">START: Campagne geboekt en bevestigd</div>
+            <div style="position:relative">
+              <div data-anchor="1" style="width:60px;height:60px;border-radius:50%;border:2px solid var(--navy);background:#fff;box-shadow:var(--shadow-xs)"></div>
+              <span style="position:absolute;top:2px;left:70px;white-space:nowrap" class="rb rb-grey">EXTERN</span>
+              <span data-cbadge="start" style="position:absolute;bottom:2px;left:70px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg><span data-cnt>0</span></span>
+            </div>
+          </div>
+
+          <div data-el="s1" role="button" tabindex="0" aria-label="Stap 1: Uiting opvragen bij stakeholders" class="el-box">
+            <div class="el-title">1. Uiting opvragen bij stakeholders</div>
+            <span class="rb rb-blue" style="position:absolute;top:-11px;right:10px">CM</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;width:100%;max-width:664px;justify-items:center">
+            <div data-el="s1a" role="button" tabindex="0" aria-label="Uitvraag bij adverteerder" class="el-box">
+              <div class="el-title">Uitvraag bij adverteerder</div>
+              <span class="rb rb-blue" style="position:absolute;top:-11px;right:10px">CM</span>
+            </div>
+            <div data-el="s1b" role="button" tabindex="0" aria-label="Uitvraag bij mediabureau" class="el-box">
+              <div class="el-title">Uitvraag bij mediabureau</div>
+              <span class="rb rb-blue" style="position:absolute;top:-11px;right:10px">CM</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec2" data-screen-label="Sectie 2 · Tijdigheid en aanlevering" style="position:relative;background:#F7FAFD;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 2 · Tijdigheid en aanlevering</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div data-el="d1" role="button" tabindex="0" aria-label="Beslissing: Uiting tijdig aangeleverd?" class="diamond">
+              <div class="dm-back"></div><div class="dm-face"></div>
+              <div class="dm-txt" style="padding:0 58px">Uiting tijdig aangeleverd?</div>
+              <span class="rb rb-blue" style="position:absolute;top:2px;left:calc(50% + 18px)">CM</span>
+            </div>
+            <div data-branchrow="v06" style="position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
+              <button data-connchip="1" data-conn="v06" title="Verbinding v06 · NEE — klik om te reageren" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);color:var(--navy);font-size:10px;font-weight:700;letter-spacing:.05em;padding:3.5px 10px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-xs)">NEE<span data-branchcnt="v06">0</span></button>
+              <svg aria-hidden="true" width="26" height="10" viewBox="0 0 26 10"><line x1="0" y1="5" x2="19" y2="5" stroke="#7D9BC1" stroke-width="2"></line><path d="M18 1 25 5 18 9Z" fill="#7D9BC1"></path></svg>
+              <button data-f2pill="1" data-conn="v06" title="Open subproces Flow 2 (buiten scope)" style="display:inline-flex;align-items:center;gap:6px;background:#F4F4F3;border:1.5px dashed #9A9A99;color:#575756;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:5px 12px;border-radius:8px;cursor:pointer"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M12 8v8M8 12h8"></path></svg>Flow 2</button>
+            </div>
+          </div>
+
+          <div data-el="s2" role="button" tabindex="0" aria-label="Routering: Via welk kanaal wordt aangeleverd?" class="diamond">
+            <div class="dm-back"></div><div class="dm-face"></div>
+            <div class="dm-txt" style="padding:0 58px">Via welk kanaal wordt aangeleverd?</div>
+            <span class="rb rb-grey" style="position:absolute;top:2px;left:calc(50% + 18px)">EXTERN</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:20px;width:100%;max-width:1010px">
+            <div data-el="k1" role="button" tabindex="0" aria-label="Aanlevering vanuit Globallers zelf" class="kbox">
+              <div class="el-title">Aanlevering vanuit Globallers zelf</div>
+              <span class="rb rb-blue" style="position:absolute;top:-11px;right:10px">GLOBALLER</span>
+            </div>
+            <div data-el="k2" role="button" tabindex="0" aria-label="Aanlevering via designstudio" class="kbox">
+              <div class="el-title">Aanlevering via designstudio</div>
+              <span class="rb rb-grey" style="position:absolute;top:-11px;right:10px">EXTERN</span>
+            </div>
+            <div data-el="k3" role="button" tabindex="0" aria-label="Aanlevering via adverteerder" class="kbox">
+              <div class="el-title">Aanlevering via adverteerder</div>
+              <span class="rb rb-grey" style="position:absolute;top:-11px;right:10px">EXTERN</span>
+            </div>
+            <div data-el="k4" role="button" tabindex="0" aria-label="Aanlevering via mediabureau" class="kbox">
+              <div class="el-title">Aanlevering via mediabureau (inhouse plus third party designers)</div>
+              <span class="rb rb-grey" style="position:absolute;top:-11px;right:10px">EXTERN</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec3" data-screen-label="Sectie 3 · Ordernummer" style="position:relative;background:#fff;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 3 · Ordernummer</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="s3" role="button" tabindex="0" aria-label="Stap 2: Digitale Planning / Ad Ops controleert op ordernummer" class="el-box">
+            <div class="el-title">2. Digitale Planning / Ad Ops controleert op ordernummer</div>
+            <span class="rb rb-green" style="position:absolute;top:-11px;right:10px">AD OPS</span>
+          </div>
+
+          <div data-el="d2" role="button" tabindex="0" aria-label="Beslissing: Ordernummer aanwezig?" class="diamond">
+            <div class="dm-back"></div><div class="dm-face"></div>
+            <div class="dm-txt" style="padding:0 58px">Ordernummer aanwezig?</div>
+            <span class="rb rb-green" style="position:absolute;top:2px;left:calc(50% + 18px)">AD OPS</span>
+          </div>
+
+          <div data-el="s3a" role="button" tabindex="0" aria-label="Mail naar campagnemanagers met vraag om ordernummer" class="el-box">
+            <div class="el-title">Mail naar campagnemanagers met vraag om ordernummer</div>
+            <span class="rb rb-green" style="position:absolute;top:-11px;right:10px">AD OPS</span>
+          </div>
+
+          <div data-el="s3b" role="button" tabindex="0" aria-label="Ordernummer aangeleverd door campagnemanager" class="el-box">
+            <div class="el-title">Ordernummer aangeleverd door campagnemanager</div>
+            <span class="rb rb-blue" style="position:absolute;top:-11px;right:10px">CM</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec4" data-screen-label="Sectie 4 · Controle" style="position:relative;background:#F7FAFD;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 4 · Controle</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="s4" role="button" tabindex="0" aria-label="Stap 3: Controle aangeleverde uitingen" class="el-box">
+            <div class="el-title">3. Controle aangeleverde uitingen</div>
+            <span style="position:absolute;top:-11px;right:10px;display:flex;gap:4px"><span class="rb rb-green">AD OPS</span><span class="rb rb-blue">AM/CM</span></span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div data-el="d3" role="button" tabindex="0" aria-label="Check 1: Technische specificaties" class="diamond">
+              <div class="dm-back"></div><div class="dm-face"></div>
+              <div class="dm-txt" style="padding:0 56px">Check 1: Technische specificaties</div>
+              <span style="position:absolute;top:2px;left:calc(50% + 18px);display:flex;gap:4px"><span class="rb rb-green">AD OPS</span><span class="rb rb-blue">AM/CM</span></span>
+            </div>
+            <div data-branchrow="v23" style="position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
+              <button data-connchip="1" data-conn="v23" title="Verbinding v23 · NIET CORRECT — klik om te reageren" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);color:var(--navy);font-size:10px;font-weight:700;letter-spacing:.05em;padding:3.5px 10px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-xs)">NIET CORRECT<span data-branchcnt="v23">0</span></button>
+              <svg aria-hidden="true" width="26" height="10" viewBox="0 0 26 10"><line x1="0" y1="5" x2="19" y2="5" stroke="#7D9BC1" stroke-width="2"></line><path d="M18 1 25 5 18 9Z" fill="#7D9BC1"></path></svg>
+              <button data-f2pill="1" data-conn="v23" title="Open subproces Flow 2 (buiten scope)" style="display:inline-flex;align-items:center;gap:6px;background:#F4F4F3;border:1.5px dashed #9A9A99;color:#575756;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:5px 12px;border-radius:8px;cursor:pointer"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M12 8v8M8 12h8"></path></svg>Flow 2</button>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div data-el="d4" role="button" tabindex="0" aria-label="Check 2: Inhoudelijke specificaties" class="diamond">
+              <div class="dm-back"></div><div class="dm-face"></div>
+              <div class="dm-txt" style="padding:0 56px">Check 2: Inhoudelijke specificaties</div>
+              <span style="position:absolute;top:2px;left:calc(50% + 18px);display:flex;gap:4px"><span class="rb rb-green">AD OPS</span><span class="rb rb-blue">AM/CM</span></span>
+            </div>
+            <div data-branchrow="v25" style="position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
+              <button data-connchip="1" data-conn="v25" title="Verbinding v25 · NIET CORRECT — klik om te reageren" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);color:var(--navy);font-size:10px;font-weight:700;letter-spacing:.05em;padding:3.5px 10px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-xs)">NIET CORRECT<span data-branchcnt="v25">0</span></button>
+              <svg aria-hidden="true" width="26" height="10" viewBox="0 0 26 10"><line x1="0" y1="5" x2="19" y2="5" stroke="#7D9BC1" stroke-width="2"></line><path d="M18 1 25 5 18 9Z" fill="#7D9BC1"></path></svg>
+              <button data-f2pill="1" data-conn="v25" title="Open subproces Flow 2 (buiten scope)" style="display:inline-flex;align-items:center;gap:6px;background:#F4F4F3;border:1.5px dashed #9A9A99;color:#575756;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:5px 12px;border-radius:8px;cursor:pointer"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M12 8v8M8 12h8"></path></svg>Flow 2</button>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div data-el="d5" role="button" tabindex="0" aria-label="Check 3: Overige check" class="diamond">
+              <div class="dm-back"></div><div class="dm-face"></div>
+              <div class="dm-txt" style="padding:0 56px">Check 3: Overige check</div>
+              <span style="position:absolute;top:2px;left:calc(50% + 18px);display:flex;gap:4px"><span class="rb rb-green">AD OPS</span><span class="rb rb-blue">AM/CM</span></span>
+            </div>
+            <div data-branchrow="v27" style="position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
+              <button data-connchip="1" data-conn="v27" title="Verbinding v27 · NIET CORRECT — klik om te reageren" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);color:var(--navy);font-size:10px;font-weight:700;letter-spacing:.05em;padding:3.5px 10px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-xs)">NIET CORRECT<span data-branchcnt="v27">0</span></button>
+              <svg aria-hidden="true" width="26" height="10" viewBox="0 0 26 10"><line x1="0" y1="5" x2="19" y2="5" stroke="#7D9BC1" stroke-width="2"></line><path d="M18 1 25 5 18 9Z" fill="#7D9BC1"></path></svg>
+              <button data-f2pill="1" data-conn="v27" title="Open subproces Flow 2 (buiten scope)" style="display:inline-flex;align-items:center;gap:6px;background:#F4F4F3;border:1.5px dashed #9A9A99;color:#575756;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:5px 12px;border-radius:8px;cursor:pointer"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M12 8v8M8 12h8"></path></svg>Flow 2</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec5" data-screen-label="Sectie 5 · Koppeling" style="position:relative;background:#fff;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 5 · Koppeling</div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div data-el="s5" role="button" tabindex="0" aria-label="Stap 4: Uitingen koppelen in het systeem (Broadsign)" class="el-box">
+            <div class="el-title">4. Uitingen koppelen in het systeem (Broadsign)</div>
+            <span class="rb rb-green" style="position:absolute;top:-11px;right:10px">AD OPS</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec6" data-screen-label="Sectie 6 · Bevestiging en einde" style="position:relative;background:#F7FAFD;padding:26px 16px 60px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 6 · Bevestiging en einde</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="d6" role="button" tabindex="0" aria-label="Beslissing: Wie reageert op de klant?" class="diamond">
+            <div class="dm-back"></div><div class="dm-face"></div>
+            <div class="dm-txt" style="padding:0 58px">Wie reageert op de klant?</div>
+            <span style="position:absolute;top:2px;left:calc(50% + 18px);display:flex;gap:4px"><span class="rb rb-green">AD OPS</span><span class="rb rb-blue">CM/AM</span></span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;width:100%;max-width:664px;justify-items:center">
+            <div data-el="s6a" role="button" tabindex="0" aria-label="Stap 5: Digitale Planning mailt goede ontvangst terug" class="el-box">
+              <div class="el-title" style="font-size:13px">5. Digitale Planning mailt goede ontvangst terug</div>
+              <span class="rb rb-green" style="position:absolute;top:-11px;right:10px">AD OPS</span>
+            </div>
+            <div data-el="s6b" role="button" tabindex="0" aria-label="Stap 4a1: Doorgestuurd naar campagnemanagers" class="el-box">
+              <div class="el-title" style="font-size:12.5px">4a1. Doorgestuurd naar campagnemanagers om af te stemmen met bureau, adverteerder of designer</div>
+              <span class="rb rb-blue" style="position:absolute;top:-11px;right:10px">CM</span>
+            </div>
+          </div>
+
+          <div data-el="end" role="button" tabindex="0" aria-label="EINDE: Uitingen gekoppeld en campagne gaat live" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:9px;width:280px;max-width:100%;padding:4px">
+            <div data-anchor="1" style="width:60px;height:60px;border-radius:50%;border:4px solid var(--green);background:var(--greenbg);box-shadow:var(--shadow-xs)"></div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--greentekst);text-align:center;line-height:1.45">EINDE: Uitingen gekoppeld en campagne gaat live</div>
+            <span data-cbadge="end" style="position:absolute;top:-6px;right:14px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg><span data-cnt>0</span></span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer style="padding:22px 16px 40px;text-align:center;font-size:11.5px;color:var(--muted)">Global Media &amp; Entertainment · AS-IS procesvalidatie · Reacties worden gedeeld opgeslagen</footer>
+</div>
+
+<div id="panel-root"></div>
+<div id="f2-root"></div>
+<div id="ov-root"></div>
+<div id="toast-root"></div>
+
+<script>
+/* ============================================================
+   Procesdata · "Creaties verzamelen" · AS-IS
+   (bron: werksessie-document Deel F, letterlijk verwerkt)
+   ============================================================ */
+window.PROCESDATA = {
+  secties: [
+    { n: 1, titel: "Start en uitvraag" },
+    { n: 2, titel: "Tijdigheid en aanlevering" },
+    { n: 3, titel: "Ordernummer" },
+    { n: 4, titel: "Controle" },
+    { n: 5, titel: "Koppeling" },
+    { n: 6, titel: "Bevestiging en einde" }
+  ],
+  elementen: {
+    start: {
+      type: "Startevent", sectie: 1,
+      titel: "START: Campagne geboekt en bevestigd",
+      uitvoerder: "Extern (klant)", verantwoordelijke: "AM/CM",
+      systemen: "Salesforce, gekoppeld met Broadsign",
+      omschrijving: "De klant boekt een campagne en deze wordt bevestigd. De orderbevestiging staat in Salesforce. Dit is de trigger van het proces: vanaf hier ligt er een informatiepakket met wat er opgevraagd moet worden."
+    },
+    s1: {
+      type: "Activiteit", sectie: 1,
+      titel: "1. Uiting opvragen bij stakeholders",
+      uitvoerder: "CM", verantwoordelijke: "AM/CM",
+      systemen: "Salesforce (bron campagnedetails), e-mail",
+      omschrijving: "De campagnemanager start handmatig het opvraagtraject richting de adverteerder of het mediabureau.",
+      substappen: [
+        { tekst: "PDF met campagnedetails downloaden (periode, aantal contacten, objecten, type campagne)." },
+        { tekst: "E-mail opstellen met instructie voor het aanleveren. Er is geen standaardtemplate. In de mail worden de aanleverspecificaties gedeeld via twee klikbare links:",
+          links: [
+            { label: "A · Tariefkaart en aanleverspecificaties (global.com)", url: "https://global.com/nl/over-ons/tariefkaart-en-aanleverspecificaties/" },
+            { label: "B · Aanleverspecs 2026 (PDF)", url: "https://global.com/nl/wp-content/uploads/2026/01/Aanleverspecs-2026-DEF-FINAL.pdf" }
+          ] },
+        { tekst: "De klant zoekt zelf binnen document A of B de juiste specificaties op en zet deze uit bij de eigen designafdeling of het bureau." }
+      ],
+      pijnpunten: [
+        "Geen trigger vanuit Salesforce dat het tijd is om op te vragen. De CM moet zelf signaleren dát er opgevraagd moet worden en het proces zelfstandig initiëren.",
+        "Geen overzicht van openstaande uitvragen. Opvragen is een terugkerende handmatige actie.",
+        "De CM moet per campagne zelf uitzoeken wát er opgevraagd moet worden. De specificaties verschillen per type campagne.",
+        "Geen standaard e-mailtemplate. Kwaliteit en volledigheid van de uitvraag verschillen per CM.",
+        "De aanleverspecificaties op de link zijn uitgebreid en complex. De klant moet zelf uitzoeken wat van toepassing is. Goede CM's halen de juiste specificaties eruit en zetten die in de mail, maar dat gebeurt niet altijd."
+      ]
+    },
+    s1a: {
+      type: "Activiteit", sectie: 1,
+      titel: "Uitvraag bij adverteerder",
+      uitvoerder: "CM", verantwoordelijke: "AM/CM",
+      omschrijving: "De uitvraag gaat rechtstreeks naar de adverteerder."
+    },
+    s1b: {
+      type: "Activiteit", sectie: 1,
+      titel: "Uitvraag bij mediabureau",
+      uitvoerder: "CM", verantwoordelijke: "AM/CM",
+      omschrijving: "De uitvraag gaat naar het mediabureau van de klant."
+    },
+    d1: {
+      type: "Beslissing", sectie: 2,
+      titel: "Uiting tijdig aangeleverd?",
+      uitvoerder: "CM", verantwoordelijke: "AM/CM",
+      omschrijving: "Norm is uiterlijk 5 werkdagen (ongeveer 7 kalenderdagen) vóór de startdatum van de campagne.",
+      pijnpunten: [
+        "Geen automatische signalering dat de deadline nadert. Het najagen (chasen) gebeurt handmatig en is belegd in Flow 2, buiten scope van deze visualisatie."
+      ]
+    },
+    s2: {
+      type: "Routeringsgateway", sectie: 2,
+      titel: "Via welk kanaal wordt aangeleverd?",
+      uitvoerder: "Extern", verantwoordelijke: "AM/CM",
+      omschrijving: "De uiting komt binnen via een van de vier onderstaande kanalen. Oorspronkelijke formulering uit de werksessie: “Uiting wordt aangeleverd via een van deze stakeholders”."
+    },
+    k1: {
+      type: "Activiteit", sectie: 2,
+      titel: "Aanlevering vanuit Globallers zelf",
+      uitvoerder: "Globaller (AM, CM of designmanager)", verantwoordelijke: "AM/CM",
+      omschrijving: "Een collega van Global levert de uiting zelf aan.",
+      pijnpunten: [
+        "De aanlevering komt via verschillende stakeholders bij de AM/CM binnen.",
+        "De aanlevering loopt via verschillende kanalen (WhatsApp, e-mail, WeTransfer en dergelijke).",
+        "De AM/CM moet alles zelf verzamelen en organiseren."
+      ]
+    },
+    k2: {
+      type: "Activiteit", sectie: 2,
+      titel: "Aanlevering via designstudio",
+      uitvoerder: "Designstudio, ook wel reclamebureau (extern)", verantwoordelijke: "AM/CM",
+      omschrijving: "De designstudio die de creatie heeft gemaakt levert rechtstreeks aan.",
+      pijnpunten: [
+        "Global heeft geen zicht op de voortgang van dit externe proces. Er is geen beeld of de studio al bezig is.",
+        "Geen rechtstreeks contact met de studio. Terugkoppelen bij fouten of onduidelijkheden is daardoor ingewikkeld."
+      ]
+    },
+    k3: {
+      type: "Activiteit", sectie: 2,
+      titel: "Aanlevering via adverteerder",
+      uitvoerder: "Adverteerder (extern)", verantwoordelijke: "AM/CM",
+      omschrijving: "De adverteerder levert zelf aan.",
+      pijnpunten: [
+        "De adverteerder moet zelf actie ondernemen.",
+        "Bij weinig ervaring met creaties is de aanlevering vaak niet conform specificaties. Dat is inefficiënt en geeft herstelwerk en risico."
+      ]
+    },
+    k4: {
+      type: "Activiteit", sectie: 2,
+      titel: "Aanlevering via mediabureau (inhouse plus third party designers)",
+      uitvoerder: "Mediabureau (extern)", verantwoordelijke: "AM/CM",
+      omschrijving: "Het mediabureau levert aan, maar maakt de creatie zelf niet. Dat doet een reclamebureau of designstudio, soms inhouse, soms een externe partner.",
+      pijnpunten: [
+        "Het mediabureau moet zelf een intern proces organiseren met de makende partij.",
+        "Global is afhankelijk van hoe goed zij dat onderling regelen."
+      ]
+    },
+    s3: {
+      type: "Activiteit", sectie: 3,
+      titel: "2. Digitale Planning / Ad Ops controleert op ordernummer",
+      uitvoerder: "Ad Ops", verantwoordelijke: "AM/CM",
+      systemen: "E-mail, Salesforce en Broadsign (opzoeken)",
+      omschrijving: "Zodra de uiting binnen is start Ad Operations (Digitale Planning) en controleert of er een ordernummer bij de aanlevering zit."
+    },
+    d2: {
+      type: "Beslissing", sectie: 3,
+      titel: "Ordernummer aanwezig?",
+      uitvoerder: "Ad Ops", verantwoordelijke: "AM/CM",
+      omschrijving: "Check of het ordernummer bij de aangeleverde uiting zit, zodat de uiting aan de juiste campagne gekoppeld kan worden.",
+      pijnpunten: [
+        "Bij een ontbrekend ordernummer stuurt Ad Ops een informatieverzoek naar álle campagnemanagers tegelijk, niet gericht aan de juiste persoon.",
+        "Ad Ops heeft onvoldoende achtergrondinformatie om te bepalen wiens klant het is. De handoff komt zonder duidelijke context.",
+        "Elke CM moet eerst zelf uitzoeken of het om de eigen klant gaat. Dat is inefficiënt uitzoekwerk voor het hele team.",
+        "Zodra de handoff gedaan is, is er geen proceseigenaar of bewaker meer. Niemand ziet of en wanneer het wordt opgepakt.",
+        "Soms zijn er meerdere ordernummers per campagne. Dan moet intern handmatig achterhaald worden welke ordernummers bij de campagne horen en moeten die gekoppeld worden."
+      ]
+    },
+    s3a: {
+      type: "Activiteit", sectie: 3,
+      titel: "Mail naar campagnemanagers met vraag om ordernummer",
+      uitvoerder: "Ad Ops", verantwoordelijke: "AM/CM",
+      omschrijving: "Ad Ops mailt het team campagnemanagers met het verzoek om het ordernummer."
+    },
+    s3b: {
+      type: "Activiteit", sectie: 3,
+      titel: "Ordernummer aangeleverd door campagnemanager",
+      uitvoerder: "CM", verantwoordelijke: "AM/CM",
+      omschrijving: "De CM haalt het ordernummer op bij de klant of zoekt het zelf op in het systeem en levert het aan bij Ad Ops."
+    },
+    s4: {
+      type: "Activiteit", sectie: 4,
+      titel: "3. Controle aangeleverde uitingen",
+      uitvoerder: "Ad Ops en AM/CM", verantwoordelijke: "AM/CM",
+      omschrijving: "De aangeleverde uitingen worden in drie opeenvolgende checks gecontroleerd."
+    },
+    d3: {
+      type: "Beslissing", sectie: 4,
+      titel: "Check 1: Technische specificaties",
+      uitvoerder: "Ad Ops en AM/CM", verantwoordelijke: "AM/CM",
+      systemen: "Specificatie PDF",
+      omschrijving: "Controle aan de hand van het specificatiedocument: afmetingen, duur en lengte, motion of stilstaand, kleurgebruik, geen geluid."
+    },
+    d4: {
+      type: "Beslissing", sectie: 4,
+      titel: "Check 2: Inhoudelijke specificaties",
+      uitvoerder: "Ad Ops en AM/CM", verantwoordelijke: "AM/CM",
+      omschrijving: "Voldoet de uiting aan de afspraken met de partners op wier locaties de uiting komt, zoals gemeentes en retailers. Voorbeeld: in bepaalde gemeentes is reclame voor vlees in de buitenruimte niet toegestaan. Daarnaast een representativiteitscheck: klopt de uiting inhoudelijk en is deze foutloos, zodat er niets op straat komt dat niet representatief is. Global bewaakt hiermee mede de belangen van de partners.",
+      pijnpunten: [
+        "Er is geen vaste checklist voor deze inhoudelijke controle. De AM/CM moet zelf bedenken waarop gecontroleerd moet worden."
+      ]
+    },
+    d5: {
+      type: "Beslissing", sectie: 4,
+      titel: "Check 3: Overige check",
+      uitvoerder: "Ad Ops en AM/CM", verantwoordelijke: "AM/CM",
+      omschrijving: "Zijn er meerdere uitingen binnen dezelfde campagne en kloppen de varianten: één uiting voor alle netwerken of per netwerk anders, per stad anders, per point of interest anders, enzovoort."
+    },
+    s5: {
+      type: "Activiteit", sectie: 5,
+      titel: "4. Uitingen koppelen in het systeem (Broadsign)",
+      uitvoerder: "Ad Ops", verantwoordelijke: "AM/CM",
+      systemen: "Broadsign",
+      omschrijving: "De gecontroleerde uitingen worden aan de campagne gekoppeld in Broadsign.",
+      notities: [
+        { label: "Toekomst · buiten scope van deze as-is", tekst: "Over 12 tot 18 maanden verloopt de koppeling via de gCam solution. In de huidige situatie is Broadsign leidend." }
+      ]
+    },
+    d6: {
+      type: "Beslissing", sectie: 6,
+      titel: "Wie reageert op de klant?",
+      uitvoerder: "Wisselend: Ad Ops, CM of AM", verantwoordelijke: "Onduidelijk, formeel AM/CM. Dit is precies het pijnpunt.",
+      omschrijving: "Na de koppeling zou de klant een bevestiging moeten krijgen dat de uiting in goede orde is ontvangen en verwerkt. Er is geen standaardproces voor wie dit doet.",
+      pijnpunten: [
+        "Geen standaardproces voor de terugkoppeling aan de klant. Onduidelijk wie ervoor verantwoordelijk is.",
+        "De bevestiging wordt soms helemaal niet verstuurd.",
+        "Soms doet Ad Operations het, soms de campagnemanager, soms de accountmanager. Zij zijn niet van elkaar op de hoogte wie wat al heeft gestuurd.",
+        "Iedereen hanteert een eigen systematiek en eigen formulering voor deze bevestigingsmail. Er is geen vastlegging of monitoring dat de bevestiging daadwerkelijk is verstuurd."
+      ],
+      notities: [
+        { label: "Aandachtspunt uit de werksessie", tekst: "De bevestiging gaat naar het creatieve bureau en niet naar het mediabureau. Er is onduidelijkheid over wie verantwoordelijk is voor de communicatie naar bureau of adverteerder dat de uiting gekoppeld is, en voor aanvullingen." }
+      ]
+    },
+    s6a: {
+      type: "Activiteit", sectie: 6,
+      titel: "5. Digitale Planning mailt goede ontvangst terug",
+      uitvoerder: "Ad Ops", verantwoordelijke: "AM/CM",
+      omschrijving: "Het team Digitale Planning stuurt de bevestigingsmail aan de klant.",
+      pijnpunten: [
+        "De mailbox moet handmatig in de gaten gehouden worden om te weten dat er daadwerkelijk een bevestiging is verstuurd en door wie, zodat aantoonbaar is dat het proces is afgerond."
+      ]
+    },
+    s6b: {
+      type: "Activiteit", sectie: 6,
+      titel: "4a1. Doorgestuurd naar campagnemanagers om af te stemmen met bureau, adverteerder of designer",
+      uitvoerder: "CM", verantwoordelijke: "AM/CM",
+      omschrijving: "De terugkoppeling wordt bij de CM belegd, die afstemt met bureau, adverteerder of designer.",
+      pijnpunten: [
+        "Niet vastgelegd als proces. Geen zicht op of en wanneer de terugkoppeling is afgerond."
+      ]
+    },
+    end: {
+      type: "Eindevent", sectie: 6,
+      titel: "EINDE: Uitingen gekoppeld en campagne gaat live",
+      uitvoerder: "", verantwoordelijke: "AM/CM",
+      omschrijving: "Het proces is afgerond, de uitingen zijn gekoppeld en de campagne gaat live."
+    },
+    flow2: {
+      type: "Subproces (placeholder)", sectie: "flow2",
+      titel: "Proces Flow 2: Tweede keer uitingen opvragen bij stakeholders",
+      uitvoerder: "", verantwoordelijke: "",
+      omschrijving: "Dit herstel- en naloopproces bestaat, maar is bewust buiten scope van deze visualisatie. Het wordt in een aparte flow uitgewerkt. Reageren op dit blok is wel mogelijk.",
+      notities: [
+        { label: "Twee sporen", tekst: "CHASEN (instroom vanaf “Uiting tijdig aangeleverd?” bij NEE) en Incorrecte aanlevering, proces start opnieuw (instroom vanaf de drie checks bij NIET CORRECT)." }
+      ]
+    }
+  },
+  verbindingen: [
+    { id: "v01", van: "start", naar: "s1" },
+    { id: "v02", van: "s1", naar: "s1a" },
+    { id: "v03", van: "s1", naar: "s1b" },
+    { id: "v04", van: "s1a", naar: "d1" },
+    { id: "v05", van: "s1b", naar: "d1" },
+    { id: "v06", van: "d1", naar: "flow2", label: "NEE" },
+    { id: "v07", van: "d1", naar: "s2", label: "JA" },
+    { id: "v08", van: "s2", naar: "k1" },
+    { id: "v09", van: "s2", naar: "k2" },
+    { id: "v10", van: "s2", naar: "k3" },
+    { id: "v11", van: "s2", naar: "k4" },
+    { id: "v12", van: "k1", naar: "s3" },
+    { id: "v13", van: "k2", naar: "s3" },
+    { id: "v14", van: "k3", naar: "s3" },
+    { id: "v15", van: "k4", naar: "s3" },
+    { id: "v16", van: "s3", naar: "d2" },
+    { id: "v17", van: "d2", naar: "s3a", label: "NEE" },
+    { id: "v18", van: "d2", naar: "s4", label: "JA" },
+    { id: "v19", van: "s3a", naar: "s3b" },
+    { id: "v20", van: "s3b", naar: "s4" },
+    { id: "v21", van: "s4", naar: "d3" },
+    { id: "v22", van: "d3", naar: "d4", label: "CORRECT" },
+    { id: "v23", van: "d3", naar: "flow2", label: "NIET CORRECT" },
+    { id: "v24", van: "d4", naar: "d5", label: "CORRECT" },
+    { id: "v25", van: "d4", naar: "flow2", label: "NIET CORRECT" },
+    { id: "v26", van: "d5", naar: "s5", label: "CORRECT" },
+    { id: "v27", van: "d5", naar: "flow2", label: "NIET CORRECT" },
+    { id: "v28", van: "s5", naar: "d6" },
+    { id: "v29", van: "d6", naar: "s6a", label: "Ad Ops" },
+    { id: "v30", van: "d6", naar: "s6b", label: "CM" },
+    { id: "v31", van: "s6a", naar: "end" },
+    { id: "v32", van: "s6b", naar: "end" }
+  ],
+  observaties: [
+    "Overzicht van het proces ontbreekt.",
+    "Duidelijk eigenaarschap en heldere verantwoordelijkheden ontbreken.",
+    "Communicatie, intern en extern, is niet gestructureerd.",
+    "De kwaliteit van het volledige proces is ongestructureerd."
+  ]
+};
+</script>
+
+<script>
+/* ============================================================
+   App logic — vanilla port of the "Procesflow AS-IS" component.
+   Faithful to the original: DOM-measured arrow-routing geometry,
+   shared storage (Supabase REST) with in-memory fallback,
+   detail panel, and reactions overview with CSV export.
+   ============================================================ */
+(function () {
+  "use strict";
+  var D = window.PROCESDATA;
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+
+  /* Config (mirrors the design-component props / defaults) */
+  var CFG = { toonPijnpunten: true, observatiesStandaardOpen: false, legendaStandaardOpen: false };
+
+  var DIAMONDS = { d1: 1, d2: 1, d3: 1, d4: 1, d5: 1, d6: 1, s2: 1 };
+  var SPECIAL = { start: 1, end: 1, flow2: 1 }; /* comment badges placed statically */
+  var SVG_NS = "http://www.w3.org/2000/svg";
+
+  var state = {
+    ready: false, geo: null, narrow: false, sheet: false, f2p: null,
+    sel: null, hoverId: null, activeSec: 1,
+    personName: "", draftType: "Klopt niet", draftText: "",
+    voteMsg: "", voteWarn: "", commentWarn: "", commentMsg: "",
+    comments: [], votes: [], loaded: false, loading: true, fallback: false,
+    ovOpen: false, fSectie: "alle", fType: "alle", fOnaf: false, ovLoading: false,
+    obsOpen: null, legOpen: null, toast: "", dragY: 0
+  };
+
+  var memComments = [], memVotes = [], useShared = false, alive = true;
+  var mraf = null, sraf = null, rraf = null, geoKey = "", panelKey = null, panelDirty = false;
+  var wasLock = false, toastT = null, dragStartY = 0;
+
+  /* ---------- helpers ---------- */
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function slug(naam) {
+    return String(naam).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  }
+  function fmtTijd(iso) {
+    try { return new Date(iso).toLocaleString("nl-NL", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return String(iso); }
+  }
+  function secKeyOf(id) {
+    var el = D.elementen[id];
+    if (el) return String(el.sectie);
+    var c = D.verbindingen.find(function (v) { return v.id === id; });
+    if (c) { var fe = D.elementen[c.van]; return fe ? String(fe.sectie) : "1"; }
+    return "1";
+  }
+  function secLabelOf(id) {
+    var k = secKeyOf(id);
+    if (k === "flow2") return "Flow 2 (buiten scope)";
+    var s = D.secties.find(function (x) { return String(x.n) === k; });
+    return s ? "Sectie " + s.n + " · " + s.titel : "";
+  }
+  function elLabelOf(id) {
+    var el = D.elementen[id];
+    if (el) return id + " · " + el.titel;
+    var c = D.verbindingen.find(function (v) { return v.id === id; });
+    if (c) return "Verbinding " + id + " (" + c.van + " → " + c.naar + ")" + (c.label ? " · " + c.label : "");
+    return id;
+  }
+  function typeChipStyle(type) {
+    var base = "font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:999px;";
+    if (type === "Klopt niet") return base + "background:#FBE7E7;color:#D23B3B;border:1px solid #F2C6C6";
+    if (type === "Vraag") return base + "background:#FCF2D9;color:#8F5B00;border:1px solid #F0DCAA";
+    return base + "background:#EEF7FC;color:#1B4B89;border:1px solid #A7DDF2";
+  }
+  function commentCounts() {
+    var m = {}; state.comments.forEach(function (c) { m[c.elementId] = (m[c.elementId] || 0) + 1; }); return m;
+  }
+  function showToast(msg) {
+    clearTimeout(toastT);
+    state.toast = msg; renderToast();
+    toastT = setTimeout(function () { if (alive) { state.toast = ""; renderToast(); } }, 3500);
+  }
+
+  /* ---------- storage (Supabase REST + memory fallback) ---------- */
+  var SUPA_URL = "https://oenfktekinmrsehfzdva.supabase.co";
+  var SUPA_KEY = "sb_publishable_mgbVOTLLpxUBvnv8BOXDKQ_cPN9AJxx"; /* publishable key: veilig om client-side te gebruiken; RLS beschermt de data */
+  function supaFetch(path, opts) {
+    opts = opts || {};
+    var headers = Object.assign({
+      apikey: SUPA_KEY,
+      Authorization: "Bearer " + SUPA_KEY,
+      "Content-Type": "application/json"
+    }, opts.headers || {});
+    return fetch(SUPA_URL + "/rest/v1/" + path, Object.assign({}, opts, { headers: headers }));
+  }
+  function degrade() { useShared = false; state.fallback = true; scheduleRender(); }
+  function rowToComment(r) { return { key: r.key, elementId: r.element_id, naam: r.naam, type: r.type, tekst: r.tekst, tijd: r.tijd, afgehandeld: !!r.afgehandeld }; }
+  function rowToVote(r) { return { key: r.key, elementId: r.element_id, naam: r.naam, stem: r.stem, tijd: r.tijd }; }
+
+  async function initStorage() {
+    var ok = false;
+    try {
+      var r = await supaFetch("comments?select=key&limit=1", { method: "GET" });
+      ok = r.ok;
+    } catch (e) { ok = false; }
+    useShared = ok;
+    if (!ok) degrade();
+    await loadAll();
+  }
+  async function stInsertComment(key, rec) {
+    if (useShared) {
+      try {
+        var r = await supaFetch("comments", {
+          method: "POST",
+          headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({ key: key, element_id: rec.elementId, naam: rec.naam, type: rec.type, tekst: rec.tekst, tijd: rec.tijd, afgehandeld: false })
+        });
+        if (r.ok) return;
+      } catch (e) {}
+      degrade();
+    }
+    memComments.push(Object.assign({ key: key }, rec));
+  }
+  async function stUpsertVote(key, rec) {
+    if (useShared) {
+      try {
+        var r = await supaFetch("votes?on_conflict=key", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify({ key: key, element_id: rec.elementId, naam_slug: slug(rec.naam), naam: rec.naam, stem: rec.stem, tijd: rec.tijd })
+        });
+        if (r.ok) return;
+      } catch (e) {}
+      degrade();
+    }
+    memVotes = memVotes.filter(function (v) { return v.key !== key; }).concat([Object.assign({ key: key }, rec)]);
+  }
+  async function stSetDone(key, val) {
+    if (useShared) {
+      try {
+        var r = await supaFetch("comments?key=eq." + encodeURIComponent(key), {
+          method: "PATCH",
+          headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({ afgehandeld: val })
+        });
+        if (r.ok) return;
+      } catch (e) {}
+      degrade();
+    }
+    memComments = memComments.map(function (c) { return c.key === key ? Object.assign({}, c, { afgehandeld: val }) : c; });
+  }
+  async function loadAll() {
+    state.loading = true; state.ovLoading = true; scheduleRender();
+    var comments = [], votes = [];
+    if (useShared) {
+      try {
+        var rc = await supaFetch("comments?select=*&order=tijd.asc", { method: "GET" });
+        var rv = await supaFetch("votes?select=*", { method: "GET" });
+        if (!rc.ok || !rv.ok) throw new Error("load " + rc.status + "/" + rv.status);
+        comments = (await rc.json()).map(rowToComment);
+        votes = (await rv.json()).map(rowToVote);
+      } catch (e) { degrade(); }
+    }
+    if (!useShared) { comments = memComments.slice(); votes = memVotes.slice(); }
+    comments.sort(function (a, b) { return String(a.tijd).localeCompare(String(b.tijd)); });
+    if (alive) { state.comments = comments; state.votes = votes; state.loading = false; state.loaded = true; state.ovLoading = false; panelDirty = true; scheduleRender(); }
+  }
+
+  /* ---------- selection & actions ---------- */
+  function select(kind, id) {
+    state.sel = { kind: kind, id: id }; state.f2p = null;
+    state.voteMsg = ""; state.voteWarn = ""; state.commentWarn = ""; state.commentMsg = ""; state.dragY = 0;
+    scheduleRender();
+  }
+  function closePanel() { state.sel = null; scheduleRender(); }
+
+  async function vote(stem) {
+    var sel = state.sel;
+    if (!sel || sel.kind !== "el") return;
+    var naam = state.personName.trim();
+    if (!naam) { state.voteWarn = "Vul eerst je naam in om te kunnen stemmen."; state.voteMsg = ""; panelDirty = true; scheduleRender(); return; }
+    var key = "vote:" + sel.id + ":" + slug(naam);
+    var rec = { elementId: sel.id, naam: naam, stem: stem, tijd: new Date().toISOString() };
+    await stUpsertVote(key, rec);
+    state.votes = state.votes.filter(function (v) { return v.key !== key; }).concat([Object.assign({ key: key }, rec)]);
+    state.voteMsg = "Je stem is opgeslagen."; state.voteWarn = ""; panelDirty = true; scheduleRender();
+  }
+  async function submit() {
+    var sel = state.sel;
+    if (!sel) return;
+    var naam = state.personName.trim();
+    var tekst = state.draftText.trim();
+    if (!naam) { state.commentWarn = "Vul eerst je naam in."; state.commentMsg = ""; panelDirty = true; scheduleRender(); return; }
+    if (!tekst) { state.commentWarn = "Schrijf eerst een reactie."; state.commentMsg = ""; panelDirty = true; scheduleRender(); return; }
+    var key = "comment:" + sel.id + ":" + Date.now() + "-" + Math.random().toString(36).slice(2, 6);
+    var rec = { elementId: sel.id, naam: naam, type: state.draftType, tekst: tekst, tijd: new Date().toISOString(), afgehandeld: false };
+    await stInsertComment(key, rec);
+    state.comments = state.comments.concat([Object.assign({ key: key }, rec)]);
+    state.draftText = ""; state.commentWarn = ""; state.commentMsg = "Reactie geplaatst.";
+    panelDirty = true; scheduleRender();
+  }
+  async function toggleDoneKey(key) {
+    var c = state.comments.find(function (x) { return x.key === key; });
+    if (!c) return;
+    var rec = { elementId: c.elementId, naam: c.naam, type: c.type, tekst: c.tekst, tijd: c.tijd, afgehandeld: !c.afgehandeld };
+    await stSetDone(key, rec.afgehandeld);
+    state.comments = state.comments.map(function (x) { return x.key === key ? Object.assign({ key: key }, rec) : x; });
+    panelDirty = true; scheduleRender();
+  }
+  function exportCsvNow() {
+    var escv = function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; };
+    var rows = [["soort", "element", "sectie", "naam", "type of stem", "tekst", "tijdstip", "afgehandeld"]];
+    state.comments.forEach(function (c) { rows.push(["Reactie", elLabelOf(c.elementId), secLabelOf(c.elementId), c.naam, c.type, c.tekst, fmtTijd(c.tijd), c.afgehandeld ? "ja" : "nee"]); });
+    state.votes.forEach(function (v) { rows.push(["Stem", elLabelOf(v.elementId), secLabelOf(v.elementId), v.naam, v.stem === "klopt" ? "Klopt" : "Klopt niet", "", fmtTijd(v.tijd), ""]); });
+    var csv = "﻿" + rows.map(function (r) { return r.map(escv).join(";"); }).join("\r\n");
+    try {
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "reacties-creaties-verzamelen.csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      showToast("CSV gedownload.");
+    } catch (e) {
+      var cb = navigator.clipboard;
+      if (cb && cb.writeText) cb.writeText(csv).then(function () { showToast("Downloaden lukte niet; CSV gekopieerd naar het klembord."); }).catch(function () { showToast("Export mislukt in deze omgeving."); });
+      else showToast("Export mislukt in deze omgeving.");
+    }
+  }
+
+  /* ---------- geometry ---------- */
+  function measure() { if (mraf) return; mraf = requestAnimationFrame(function () { mraf = null; measureNow(); }); }
+  function measureNow() {
+    if (!D || !alive) return;
+    var cv = $("#bpm-canvas"); if (!cv) return;
+    var cw = cv.clientWidth; if (!cw) return;
+    var narrow = cw < 980;
+    if (narrow !== state.narrow) { state.narrow = narrow; render(); measure(); return; }
+    var cr = cv.getBoundingClientRect();
+    var R = {};
+    var grab = function (id) {
+      var els = cv.querySelectorAll('[data-el="' + id + '"]');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el.offsetWidth > 0) {
+          var a = el.querySelector("[data-anchor]") || el;
+          var r = a.getBoundingClientRect();
+          return { l: r.left - cr.left, t: r.top - cr.top, r: r.right - cr.left, b: r.bottom - cr.top, w: r.width, h: r.height, cx: r.left - cr.left + r.width / 2, cy: r.top - cr.top + r.height / 2 };
+        }
+      }
+      return null;
+    };
+    Object.keys(D.elementen).forEach(function (id) { R[id] = grab(id); });
+    var rows = {};
+    cv.querySelectorAll("[data-branchrow]").forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      rows[el.getAttribute("data-branchrow")] = { l: r.left - cr.left, t: r.top - cr.top, r: r.right - cr.left, b: r.bottom - cr.top };
+    });
+    var geo = buildGeo(R, narrow, cw, Math.round(cr.height), rows);
+    var key = JSON.stringify(geo);
+    if (key !== geoKey) { geoKey = key; state.geo = geo; renderOverlays(); }
+  }
+  function buildGeo(R, narrow, w, h, rows) {
+    var conns = [];
+    var skip = { v06: 1, v23: 1, v25: 1, v27: 1 };
+    var dgMap = { v07: "v06", v22: "v23", v24: "v25", v26: "v27" };
+    var stacked = function (a, b) { return R[a] && R[b] && R[b].t > R[a].b - 6; };
+    for (var ci = 0; ci < D.verbindingen.length; ci++) {
+      var c = D.verbindingen[ci];
+      if (skip[c.id]) continue;
+      var f = R[c.van], t = R[c.naar];
+      if (!f || !t) continue;
+      var pts = null, midY, X, laneX;
+      if (c.id === "v18") {
+        laneX = Math.min(f.l, t.l) - 34;
+        pts = [[f.l, f.cy], [laneX, f.cy], [laneX, t.cy], [t.l, t.cy]];
+      } else if (c.id === "v03" && stacked("s1a", "s1b")) {
+        X = Math.max(f.r, t.r) + 26; pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+      } else if (c.id === "v04" && stacked("s1a", "s1b")) {
+        X = Math.min(f.l, t.l) - 26; pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+      } else if (c.id === "v30" && stacked("s6a", "s6b")) {
+        X = Math.max(f.r, t.r) + 26; pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+      } else if (c.id === "v31" && stacked("s6a", "s6b")) {
+        X = Math.min(f.l, t.l) - 26; pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+      } else if (c.id === "v10" && stacked("k1", "k3")) {
+        X = Math.min(R.k1.l, R.k3.l) - 22; pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+      } else if (c.id === "v11" && stacked("k2", "k4")) {
+        X = Math.max(R.k2.r, R.k4.r) + 22; pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+      } else if (c.id === "v12" && stacked("k1", "k3")) {
+        X = Math.min(R.k1.l, R.k3.l) - 36; pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+      } else if (c.id === "v13" && stacked("k2", "k4")) {
+        X = Math.max(R.k2.r, R.k4.r) + 36; pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+      } else if (c.id === "v20") {
+        if (Math.abs(f.cx - t.cx) < 14) pts = [[f.cx, f.b], [t.cx, t.t]];
+        else { midY = (f.b + t.t) / 2; pts = [[f.cx, f.b], [f.cx, midY], [t.cx, midY], [t.cx, t.t]]; }
+      } else {
+        if (t.t >= f.b - 4) {
+          if (Math.abs(f.cx - t.cx) < 14) pts = [[f.cx, f.b], [t.cx, t.t]];
+          else { midY = (f.b + t.t) / 2; pts = [[f.cx, f.b], [f.cx, midY], [t.cx, midY], [t.cx, t.t]]; }
+        } else if (t.l >= f.r) {
+          pts = [[f.r, f.cy], [t.l, t.cy]];
+        } else {
+          pts = [[f.l, f.cy], [t.r, t.cy]];
+        }
+      }
+      var chipSeg = -1;
+      if (dgMap[c.id] && rows && rows[dgMap[c.id]]) {
+        var B = rows[dgMap[c.id]];
+        if (f.cx > B.l - 10 && f.cx < B.r + 10 && B.t >= f.b - 4 && B.b <= t.t + 4) {
+          var sideX = Math.min(w - 8, B.r + 16);
+          var yTop = f.b + 5, yBot = B.b + 12;
+          pts = [[f.cx, f.b], [f.cx, yTop], [sideX, yTop], [sideX, yBot], [t.cx, yBot], [t.cx, t.t]];
+          chipSeg = 4;
+        }
+      }
+      var best = 0, bl = -1;
+      for (var i = 0; i < pts.length - 1; i++) {
+        var L = Math.abs(pts[i + 1][0] - pts[i][0]) + Math.abs(pts[i + 1][1] - pts[i][1]);
+        if (L > bl) { bl = L; best = i; }
+      }
+      var seg = chipSeg >= 0 ? chipSeg : best;
+      var cp = { x: Math.round((pts[seg][0] + pts[seg + 1][0]) / 2), y: Math.round((pts[seg][1] + pts[seg + 1][1]) / 2) };
+      conns.push({ id: c.id, van: c.van, naar: c.naar, label: c.label || null, pts: pts.map(function (p) { return [Math.round(p[0]), Math.round(p[1])]; }), cp: cp });
+    }
+    return { w: w, h: h, conns: conns };
+  }
+
+  /* ---------- overlays (arrows + connection chips) ---------- */
+  function svgEl(name, attrs) {
+    var e = document.createElementNS(SVG_NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function renderOverlays() {
+    var g = state.geo;
+    var aRoot = $("#arrows-layer"), cRoot = $("#chips-layer");
+    if (!aRoot || !cRoot) return;
+    aRoot.innerHTML = ""; cRoot.innerHTML = "";
+    if (!g) return;
+    var sel = state.sel, hov = state.hoverId;
+    var selEl = sel && sel.kind === "el" ? sel.id : null;
+    var selConn = sel && sel.kind === "conn" ? sel.id : null;
+
+    /* arrows */
+    var svg = svgEl("svg", { width: g.w, height: g.h });
+    svg.setAttribute("style", "position:absolute;top:0;left:0;pointer-events:none;z-index:1;overflow:visible;display:block");
+    var defs = svgEl("defs", {});
+    [["ahl", "#7D9BC1", 7], ["ahb", "#0B78BE", 7.5]].forEach(function (m) {
+      var mk = svgEl("marker", { id: m[0], viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: m[2], markerHeight: m[2], orient: "auto" });
+      mk.appendChild(svgEl("path", { d: "M0 0 L10 5 L0 10 Z", fill: m[1] }));
+      defs.appendChild(mk);
+    });
+    svg.appendChild(defs);
+    g.conns.forEach(function (c) {
+      var hot = c.van === hov || c.naar === hov || c.van === selEl || c.naar === selEl || c.id === selConn;
+      svg.appendChild(svgEl("path", {
+        d: "M" + c.pts.map(function (p) { return p[0] + " " + p[1]; }).join(" L "),
+        fill: "none", stroke: hot ? "#0B78BE" : "#7D9BC1", "stroke-width": hot ? 2.6 : 2,
+        "stroke-linejoin": "round", "marker-end": "url(#" + (hot ? "ahb" : "ahl") + ")"
+      }));
+    });
+    aRoot.appendChild(svg);
+
+    /* chips */
+    var ccc = commentCounts();
+    var bubbleSvg = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg>';
+    g.conns.forEach(function (c) {
+      var cnt = ccc[c.id] || 0;
+      var active = selConn === c.id;
+      var b = document.createElement("button");
+      b.setAttribute("data-connchip", "1");
+      b.setAttribute("data-active", String(active));
+      b.setAttribute("data-conn", c.id);
+      b.setAttribute("title", "Verbinding " + c.id + (c.label ? " · " + c.label : "") + " — klik om te reageren");
+      b.setAttribute("aria-label", "Verbinding " + c.id);
+      var sup = cnt > 0 ? '<span style="position:absolute;top:-8px;right:-9px;min-width:16px;height:16px;border-radius:999px;background:#0B78BE;color:#fff;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 1px 3px rgba(27,75,137,.3)">' + cnt + '</span>' : '';
+      if (c.label) {
+        b.style.cssText = "position:absolute;left:" + c.cp.x + "px;top:" + c.cp.y + "px;transform:translate(-50%,-50%);pointer-events:auto;display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #B6C9DE;color:#1B4B89;font-size:10px;font-weight:700;letter-spacing:.05em;padding:3px 10px;border-radius:999px;cursor:pointer;box-shadow:0 1px 2px rgba(27,75,137,.08);white-space:nowrap";
+        b.innerHTML = esc(c.label) + sup;
+      } else {
+        b.style.cssText = "position:absolute;left:" + c.cp.x + "px;top:" + c.cp.y + "px;transform:translate(-50%,-50%);pointer-events:auto;display:flex;align-items:center;justify-content:center;width:24px;height:24px;background:#fff;border:1.5px solid " + (cnt ? "#0B78BE" : "#B6C9DE") + ";color:" + (cnt ? "#0B78BE" : "#8DA5BE") + ";border-radius:999px;cursor:pointer;box-shadow:0 1px 2px rgba(27,75,137,.08);padding:0";
+        b.innerHTML = bubbleSvg + sup;
+      }
+      b.addEventListener("click", function () { select("conn", c.id); });
+      cRoot.appendChild(b);
+    });
+  }
+
+  /* ---------- detail panel ---------- */
+  function buildPanelData() {
+    var sel = state.sel; if (!sel) return null;
+    var id = sel.id;
+    var out = { substappen: [], pijnpunten: [], notities: [], comments: [], votedK: false, votedKN: false };
+    if (sel.kind === "el" && D.elementen[id]) {
+      var el = D.elementen[id];
+      out.panel = {
+        typeLabel: el.type + " · " + secLabelOf(id),
+        titel: el.titel,
+        uitvoerder: el.uitvoerder || "", hasUitvoerder: !!el.uitvoerder,
+        verantwoordelijke: el.verantwoordelijke || "—",
+        systemen: el.systemen || "", hasSys: !!el.systemen,
+        omschrijving: el.omschrijving || "", hasOms: !!el.omschrijving,
+        hasRollen: !!(el.uitvoerder || el.verantwoordelijke),
+        hasSub: !!(el.substappen && el.substappen.length),
+        hasPijn: !!(el.pijnpunten && el.pijnpunten.length),
+        pijnCount: el.pijnpunten ? el.pijnpunten.length : 0,
+        hasNot: !!(el.notities && el.notities.length),
+        isConn: false, canVote: true, van: "", naar: "", conditie: ""
+      };
+      out.substappen = (el.substappen || []).map(function (st, i) { return { nr: i + 1, tekst: st.tekst, links: st.links || [], heeftLinks: !!(st.links && st.links.length) }; });
+      out.pijnpunten = el.pijnpunten || [];
+      out.notities = el.notities || [];
+      var sg = slug(state.personName.trim());
+      if (sg) {
+        var own = state.votes.find(function (v) { return v.key === "vote:" + id + ":" + sg; });
+        if (own) { out.votedK = own.stem === "klopt"; out.votedKN = own.stem === "klopt_niet"; }
+      }
+    } else {
+      var c = D.verbindingen.find(function (v) { return v.id === id; });
+      if (c) {
+        var fe = D.elementen[c.van], te = D.elementen[c.naar];
+        out.panel = {
+          typeLabel: "Verbinding · " + secLabelOf(id),
+          titel: c.label ? "Verbinding " + c.id + " · " + c.label : "Verbinding " + c.id,
+          van: (fe ? fe.titel : c.van), naar: (te ? te.titel : c.naar),
+          conditie: c.label || "Geen (standaard doorstroom)",
+          uitvoerder: "", hasUitvoerder: false, verantwoordelijke: "", systemen: "", hasSys: false,
+          omschrijving: "Reageer op deze overgang, bijvoorbeeld als hier volgens jou een stap mist of de volgorde anders loopt.",
+          hasOms: true, hasRollen: false, hasSub: false, hasPijn: false, pijnCount: 0, hasNot: false,
+          isConn: true, canVote: false
+        };
+      }
+    }
+    if (!out.panel) return null;
+    out.comments = state.comments.filter(function (c) { return c.elementId === id; }).map(function (c) {
+      return { naam: c.naam, typeLabel: c.type, chipStyle: typeChipStyle(c.type), tijdF: fmtTijd(c.tijd), tekst: c.tekst };
+    });
+    return out;
+  }
+  function labelRow(label, value, w) {
+    return '<div style="display:flex;gap:10px;font-size:12.5px;line-height:1.5"><span style="flex:0 0 ' + w + 'px;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;padding-top:2px">' + label + '</span><span style="color:var(--ink)">' + value + '</span></div>';
+  }
+  function buildPanelHTML() {
+    var pd = buildPanelData(); if (!pd) return "";
+    var p = pd.panel, s = state, h = "";
+    if (s.sheet) h += '<div id="drag-handle" style="position:sticky;top:0;background:#fff;padding:10px 0 4px;display:flex;justify-content:center;touch-action:none;z-index:2;border-radius:18px 18px 0 0"><span style="width:44px;height:5px;border-radius:999px;background:#D8E2EC"></span></div>';
+    h += '<div style="padding:16px 20px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">';
+    h += '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)">' + esc(p.typeLabel) + '</div>';
+    h += '<button id="panel-close" aria-label="Sluiten" style="flex:0 0 auto;width:30px;height:30px;border-radius:999px;border:none;background:var(--blue50);color:var(--navy);font-size:15px;font-weight:600;cursor:pointer;line-height:1">×</button></div>';
+    h += '<div style="padding:0 20px 26px">';
+    h += '<h2 data-panel-title="1" tabindex="-1" style="margin:7px 0 0;font-size:16.5px;font-weight:800;color:var(--navy);line-height:1.35;outline:none">' + esc(p.titel) + '</h2>';
+
+    if (p.isConn) {
+      h += '<div style="margin-top:14px;border:1px solid var(--hairline);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">';
+      h += labelRow("Van", esc(p.van), 92) + labelRow("Naar", esc(p.naar), 92);
+      h += '<div style="display:flex;gap:10px;font-size:12.5px;line-height:1.5"><span style="flex:0 0 92px;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;padding-top:2px">Conditie</span><span style="color:var(--ink);font-weight:600">' + esc(p.conditie) + '</span></div></div>';
+    }
+    if (p.hasRollen) {
+      h += '<div style="margin-top:14px;border:1px solid var(--hairline);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">';
+      if (p.hasUitvoerder) h += labelRow("Uitvoerder", esc(p.uitvoerder), 128);
+      h += labelRow("Verantwoordelijke", esc(p.verantwoordelijke), 128);
+      if (p.hasSys) h += labelRow("Systemen", esc(p.systemen), 128);
+      h += '</div>';
+    }
+    if (p.hasOms) h += '<p style="margin:14px 0 0;font-size:13px;line-height:1.65;color:var(--ink)">' + esc(p.omschrijving) + '</p>';
+
+    if (p.hasSub) {
+      h += '<div style="margin-top:16px"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">Substappen</div><div style="display:flex;flex-direction:column;gap:10px">';
+      pd.substappen.forEach(function (st) {
+        h += '<div style="display:flex;gap:10px"><span style="flex:0 0 22px;height:22px;border-radius:999px;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">' + st.nr + '</span><div style="font-size:12.5px;line-height:1.6;color:var(--ink)">' + esc(st.tekst);
+        if (st.heeftLinks) {
+          h += '<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">';
+          st.links.forEach(function (l) { h += '<a href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer" style="font-size:12px;font-weight:600;color:var(--blue);word-break:break-word">' + esc(l.label) + ' ↗</a>'; });
+          h += '</div>';
+        }
+        h += '</div></div>';
+      });
+      h += '</div></div>';
+    }
+    if (p.hasPijn) {
+      h += '<div style="margin-top:16px;background:var(--amberbg);border:1px solid var(--amberrand);border-radius:10px;padding:12px 14px"><div style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ambertekst);margin-bottom:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 3.5 22 20.5H2Z"></path><path d="M12 10v4.5"></path><path d="M12 17.6h.01"></path></svg>Pijnpunten (' + p.pijnCount + ')</div><ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:7px">';
+      pd.pijnpunten.forEach(function (pt) { h += '<li style="font-size:12.5px;line-height:1.6;color:#5F4A15">' + esc(pt) + '</li>'; });
+      h += '</ul></div>';
+    }
+    if (p.hasNot) {
+      h += '<div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">';
+      pd.notities.forEach(function (nt) { h += '<div style="background:var(--blue50);border:1px solid var(--blue100);border-radius:10px;padding:11px 14px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mainblue);margin-bottom:5px">' + esc(nt.label) + '</div><div style="font-size:12.5px;line-height:1.6;color:var(--ink)">' + esc(nt.tekst) + '</div></div>'; });
+      h += '</div>';
+    }
+    if (p.canVote) {
+      h += '<div style="margin-top:20px;border-top:1px solid var(--hairline);padding-top:16px"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)">Snelvalidatie</div><p style="margin:7px 0 10px;font-size:12.5px;color:var(--ink)">Klopt dit onderdeel zoals het hier beschreven staat?</p>';
+      h += '<input type="text" data-name-input value="' + esc(s.personName) + '" placeholder="Je naam (verplicht om te stemmen of reageren)" aria-label="Je naam" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--ink);background:#fff">';
+      h += '<div style="display:flex;gap:8px;margin-top:9px"><button id="vote-k" data-vbtn="k" data-on="' + String(pd.votedK) + '" style="flex:1;border:1.5px solid var(--green);color:var(--greentekst);background:#fff;border-radius:9px;padding:9px 0;font-size:12.5px;font-weight:700;cursor:pointer">Klopt</button><button id="vote-kn" data-vbtn="kn" data-on="' + String(pd.votedKN) + '" style="flex:1;border:1.5px solid var(--red);color:var(--red);background:#fff;border-radius:9px;padding:9px 0;font-size:12.5px;font-weight:700;cursor:pointer">Klopt niet</button></div>';
+      if (s.voteWarn) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--red)">' + esc(s.voteWarn) + '</p>';
+      if (s.voteMsg) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--greentekst)">✓ ' + esc(s.voteMsg) + '</p>';
+      h += '<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">Eén stem per persoon per onderdeel; opnieuw stemmen overschrijft je eerdere stem. Stemtotalen zijn alleen zichtbaar in het reactieoverzicht.</p></div>';
+    }
+
+    /* comments */
+    h += '<div style="margin-top:20px;border-top:1px solid var(--hairline);padding-top:16px"><div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)">Reacties <span style="font-size:10.5px;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:1px 8px;letter-spacing:0">' + pd.comments.length + '</span></div>';
+    if (pd.comments.length === 0) h += '<p style="margin:10px 0 0;font-size:12.5px;color:var(--muted)">Nog geen reacties op dit onderdeel. Jij kunt de eerste zijn.</p>';
+    h += '<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">';
+    pd.comments.forEach(function (c) {
+      h += '<div style="border:1px solid var(--hairline);border-radius:10px;padding:10px 12px"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:var(--navy)">' + esc(c.naam) + '</span><span style="' + c.chipStyle + '">' + esc(c.typeLabel) + '</span><span style="font-size:10.5px;color:var(--muted);margin-left:auto">' + esc(c.tijdF) + '</span></div><div style="font-size:12.5px;line-height:1.6;color:var(--ink);margin-top:5px;white-space:pre-wrap">' + esc(c.tekst) + '</div></div>';
+    });
+    h += '</div>';
+    h += '<div style="margin-top:14px;background:#F7FAFD;border:1px solid var(--hairline);border-radius:10px;padding:12px"><div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">Reactie plaatsen</div>';
+    h += '<input type="text" data-name-input value="' + esc(s.personName) + '" placeholder="Je naam (verplicht)" aria-label="Je naam" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--ink);background:#fff">';
+    h += '<select id="draft-type" aria-label="Type reactie" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:12.5px;color:var(--ink);background:#fff;margin-top:8px">';
+    ["Klopt niet", "Aanvulling", "Vraag"].forEach(function (o) { h += '<option value="' + o + '"' + (s.draftType === o ? ' selected' : '') + '>' + o + '</option>'; });
+    h += '</select>';
+    h += '<textarea id="draft-text" rows="3" placeholder="Je reactie…" aria-label="Je reactie" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--ink);background:#fff;margin-top:8px;resize:vertical;font-family:inherit">' + esc(s.draftText) + '</textarea>';
+    if (s.commentWarn) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--red)">' + esc(s.commentWarn) + '</p>';
+    if (s.commentMsg) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--greentekst)">✓ ' + esc(s.commentMsg) + '</p>';
+    h += '<button id="submit-comment" data-btn-primary="1" style="margin-top:10px;width:100%;background:var(--mainblue);color:#fff;border:none;border-radius:9px;padding:10px 0;font-size:12.5px;font-weight:700;cursor:pointer">Reactie plaatsen</button></div>';
+    h += '</div>';
+    return h;
+  }
+  function panelStyleStr() {
+    var s = state;
+    if (s.sheet) return "position:fixed;left:0;right:0;bottom:0;max-height:85vh;overflow-y:auto;background:#fff;border-radius:18px 18px 0 0;z-index:40;box-shadow:0 -14px 44px rgba(18,56,106,.25);transform:translateY(" + s.dragY + "px);transition:" + (s.dragY ? "none" : "transform .18s ease") + ";animation:glsheet .22s ease";
+    return "position:fixed;top:0;right:0;bottom:0;width:400px;max-width:94vw;overflow-y:auto;background:#fff;border-left:1px solid #DEE7F0;z-index:40;box-shadow:-14px 0 36px rgba(18,56,106,.12);animation:glpanel .2s ease";
+  }
+  function bindPanel(aside) {
+    var close = function () { closePanel(); };
+    var cb = $("#panel-close", aside); if (cb) cb.addEventListener("click", close);
+    aside.querySelectorAll("[data-name-input]").forEach(function (inp) {
+      inp.addEventListener("input", function (e) {
+        state.personName = e.target.value;
+        aside.querySelectorAll("[data-name-input]").forEach(function (o) { if (o !== e.target) o.value = e.target.value; });
+        var pd = buildPanelData();
+        var vk = $("#vote-k", aside), vkn = $("#vote-kn", aside);
+        if (vk && pd) vk.setAttribute("data-on", String(pd.votedK));
+        if (vkn && pd) vkn.setAttribute("data-on", String(pd.votedKN));
+      });
+    });
+    var vk = $("#vote-k", aside); if (vk) vk.addEventListener("click", function () { vote("klopt"); });
+    var vkn = $("#vote-kn", aside); if (vkn) vkn.addEventListener("click", function () { vote("klopt_niet"); });
+    var dt = $("#draft-type", aside); if (dt) dt.addEventListener("change", function (e) { state.draftType = e.target.value; });
+    var dtx = $("#draft-text", aside); if (dtx) dtx.addEventListener("input", function (e) { state.draftText = e.target.value; });
+    var sc = $("#submit-comment", aside); if (sc) sc.addEventListener("click", function () { submit(); });
+    var dh = $("#drag-handle", aside);
+    if (dh) {
+      dh.addEventListener("touchstart", function (e) { dragStartY = e.touches[0].clientY; }, { passive: true });
+      dh.addEventListener("touchmove", function (e) { var dy = e.touches[0].clientY - dragStartY; if (dy > 0) { state.dragY = dy; aside.style.cssText = panelStyleStr(); } }, { passive: true });
+      dh.addEventListener("touchend", function () { if (state.dragY > 110) { state.dragY = 0; closePanel(); } else { state.dragY = 0; aside.style.cssText = panelStyleStr(); } });
+    }
+  }
+  function renderPanel() {
+    var root = $("#panel-root");
+    var sel = state.sel;
+    var pd = sel ? buildPanelData() : null;
+    if (!sel || !pd) { root.innerHTML = ""; panelKey = null; panelDirty = false; return; }
+    var key = sel.kind + ":" + sel.id;
+    if (key !== panelKey || panelDirty || !root.firstChild) {
+      var backdrop = state.sheet ? '<div id="panel-backdrop" style="position:fixed;inset:0;background:rgba(18,56,106,.42);z-index:39;animation:glfade .18s ease"></div>' : '';
+      root.innerHTML = backdrop + '<aside role="dialog" aria-label="Detailpaneel" data-screen-label="Detailpaneel" style="' + panelStyleStr() + '">' + buildPanelHTML() + '</aside>';
+      var aside = root.querySelector("aside");
+      bindPanel(aside);
+      var bd = $("#panel-backdrop", root); if (bd) bd.addEventListener("click", function () { closePanel(); });
+      var t = aside.querySelector("[data-panel-title]"); if (t) t.focus({ preventScroll: true });
+      panelKey = key; panelDirty = false;
+    }
+  }
+
+  /* ---------- Flow 2 pop-up ---------- */
+  var f2Key = null;
+  function renderF2() {
+    var root = $("#f2-root");
+    var key = state.f2p ? state.f2p.from : null;
+    if (key === f2Key && (key === null || root.firstChild)) return;
+    f2Key = key;
+    if (!state.f2p) { root.innerHTML = ""; return; }
+    var onCh = state.f2p.from === "v06";
+    var on = function (b) { return b ? "true" : "false"; };
+    var fromLine = "";
+    var fc = D.verbindingen.find(function (v) { return v.id === state.f2p.from; });
+    if (fc && D.elementen[fc.van]) fromLine = "'" + D.elementen[fc.van].titel + "' · " + (fc.label || "");
+    var h = '<div id="f2-backdrop" role="dialog" aria-label="Proces Flow 2" data-screen-label="Flow 2 pop-up" style="position:fixed;inset:0;z-index:52;background:rgba(18,56,106,.45);overflow-y:auto;padding:5vh 14px 6vh;animation:glfade .16s ease">';
+    h += '<div style="background:#fff;border-radius:16px;max-width:640px;width:100%;margin:0 auto;box-shadow:var(--shadow-lg);padding:22px 24px">';
+    h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div>';
+    h += '<span style="display:inline-flex;align-items:center;gap:8px;background:#F4F4F3;border:1px dashed #9A9A99;color:#575756;font-size:9.5px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:999px">SUBPROCES · BUITEN SCOPE VAN DEZE AS-IS</span>';
+    h += '<h2 style="margin:10px 0 0;font-size:17px;font-weight:800;color:var(--navy);line-height:1.35">Proces Flow 2: Tweede keer uitingen opvragen bij stakeholders</h2></div>';
+    h += '<button id="f2-close" aria-label="Sluiten" style="flex:0 0 auto;width:30px;height:30px;border-radius:999px;border:none;background:var(--blue50);color:var(--navy);font-size:15px;font-weight:600;cursor:pointer;line-height:1">×</button></div>';
+    if (fromLine) h += '<div style="margin-top:10px;font-size:11.5px;color:var(--muted)">Geopend vanuit: <b style="color:var(--navy)">' + esc(fromLine) + '</b></div>';
+    h += '<div style="margin-top:18px;border:1px solid var(--hairline);border-radius:12px;padding:20px 16px 14px;background:#FBFDFF">';
+    h += '<div style="font-size:12px;font-weight:600;color:var(--navy);text-align:center;line-height:1.45;max-width:360px;margin:0 auto">START: Tweede keer uitingen opvragen bij stakeholders</div>';
+    h += '<div style="display:flex;justify-content:center;margin-top:8px"><span style="width:50px;height:50px;border-radius:50%;border:2px solid var(--navy);background:#fff;box-shadow:var(--shadow-xs)"></span></div>';
+    h += '<div style="position:relative;height:48px">';
+    h += '<span style="position:absolute;left:50%;top:0;width:2px;height:12px;background:#7D9BC1;transform:translateX(-1px)"></span>';
+    h += '<span style="position:absolute;left:25%;right:25%;top:12px;height:2px;background:#7D9BC1"></span>';
+    h += '<span data-f2line="1" data-on="' + on(onCh) + '" style="position:absolute;left:25%;top:12px;width:2px;height:28px;background:#7D9BC1;transform:translateX(-1px)"></span>';
+    h += '<span data-f2line="1" data-on="' + on(!onCh) + '" style="position:absolute;left:75%;top:12px;width:2px;height:28px;background:#7D9BC1;transform:translateX(-1px)"></span>';
+    h += '<span data-f2tri="1" data-on="' + on(onCh) + '" style="position:absolute;left:25%;top:40px;transform:translateX(-5px);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #7D9BC1"></span>';
+    h += '<span data-f2tri="1" data-on="' + on(!onCh) + '" style="position:absolute;left:75%;top:40px;transform:translateX(-5px);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #7D9BC1"></span>';
+    h += '<span data-f2chip="1" data-on="' + on(onCh) + '" style="position:absolute;left:25%;top:24px;transform:translate(-50%,-50%);background:#fff;border:1px solid #7D9BC1;color:var(--navy);font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:999px;white-space:nowrap">NIET TIJDIG</span>';
+    h += '<span data-f2chip="1" data-on="' + on(!onCh) + '" style="position:absolute;left:75%;top:24px;transform:translate(-50%,-50%);background:#fff;border:1px solid #7D9BC1;color:var(--navy);font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:999px;white-space:nowrap">NIET CORRECT</span>';
+    h += '</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">';
+    h += '<div data-f2card="1" data-on="' + on(onCh) + '" style="border:1.5px solid var(--navy);border-radius:10px;background:#fff;padding:12px 13px;box-shadow:var(--shadow-xs)"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--mainblue)">SPOOR · CHASEN</div><div style="font-size:11.5px;line-height:1.55;color:var(--ink);margin-top:5px">De uiting is niet tijdig aangeleverd. Global jaagt de aanlevering handmatig na bij de stakeholder.</div></div>';
+    h += '<div data-f2card="1" data-on="' + on(!onCh) + '" style="border:1.5px solid var(--navy);border-radius:10px;background:#fff;padding:12px 13px;box-shadow:var(--shadow-xs)"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--mainblue)">SPOOR · INCORRECTE AANLEVERING</div><div style="font-size:11.5px;line-height:1.55;color:var(--ink);margin-top:5px">De aanlevering voldoet niet aan de specificaties. De uitingen worden opnieuw opgevraagd en het proces start opnieuw.</div></div>';
+    h += '</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">';
+    h += '<div style="display:flex;flex-direction:column;align-items:center"><span style="width:0;height:18px;border-left:2px dashed #C2C2C1"></span><span style="color:#9A9A99;font-weight:800;letter-spacing:3px;font-size:13px;line-height:1">···</span></div>';
+    h += '<div style="display:flex;flex-direction:column;align-items:center"><span style="width:0;height:18px;border-left:2px dashed #C2C2C1"></span><span style="color:#9A9A99;font-weight:800;letter-spacing:3px;font-size:13px;line-height:1">···</span></div>';
+    h += '</div>';
+    h += '<p style="margin:10px 0 0;text-align:center;font-size:11px;color:var(--muted)">Beide sporen worden uitgewerkt in een aparte flow, buiten deze as-is visualisatie.</p></div>';
+    h += '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap">';
+    h += '<button id="f2-details" style="border:1.5px solid var(--blue);background:#fff;color:var(--blue);font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer">Details en reageren</button>';
+    h += '<button id="f2-back" data-btn-primary="1" style="background:var(--mainblue);color:#fff;border:none;font-size:12px;font-weight:700;padding:8px 16px;border-radius:9px;cursor:pointer">Terug naar de flow</button>';
+    h += '</div></div></div>';
+    root.innerHTML = h;
+    var bd = $("#f2-backdrop", root);
+    bd.addEventListener("click", function (e) { if (e.target === bd) { state.f2p = null; scheduleRender(); } });
+    $("#f2-close", root).addEventListener("click", function () { state.f2p = null; scheduleRender(); });
+    $("#f2-back", root).addEventListener("click", function () { state.f2p = null; scheduleRender(); });
+    $("#f2-details", root).addEventListener("click", function () { select("el", "flow2"); });
+  }
+
+  /* ---------- reactions overview ---------- */
+  function buildOverviewHTML() {
+    var s = state, h = "";
+    var fMatch = function (c) {
+      if (s.fSectie !== "alle" && secKeyOf(c.elementId) !== s.fSectie) return false;
+      if (s.fType !== "alle" && c.type !== s.fType) return false;
+      if (s.fOnaf && c.afgehandeld) return false;
+      return true;
+    };
+    var filtered = s.comments.filter(fMatch).slice().reverse();
+    var agg = {};
+    s.votes.forEach(function (v) {
+      if (s.fSectie !== "alle" && secKeyOf(v.elementId) !== s.fSectie) return;
+      if (!agg[v.elementId]) agg[v.elementId] = { k: 0, kn: 0 };
+      if (v.stem === "klopt") agg[v.elementId].k++; else agg[v.elementId].kn++;
+    });
+    var voteTotals = Object.keys(agg).map(function (id) {
+      var o = agg[id];
+      return { titel: (D.elementen[id] ? D.elementen[id].titel : elLabelOf(id)), secLabel: secLabelOf(id), k: o.k, kn: o.kn };
+    }).sort(function (a, b) { return (b.kn - a.kn) || (b.k - a.k); });
+
+    h += '<div style="background:#fff;border-radius:16px;max-width:960px;width:100%;margin:0 auto;box-shadow:var(--shadow-lg);padding:22px 24px 26px">';
+    h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0;font-size:18px;font-weight:800;color:var(--navy)">Alle reacties</h2><p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Voor de procesbegeleiders: reacties en stemtotalen uit de gedeelde opslag.</p></div>';
+    h += '<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="ov-refresh" style="border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer">Vernieuwen</button><button id="ov-csv" data-btn-primary="1" style="background:var(--mainblue);color:#fff;border:none;font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer;box-shadow:var(--shadow-xs)">Download CSV</button><button id="ov-close" aria-label="Sluiten" style="width:32px;height:32px;border-radius:999px;border:none;background:var(--blue50);color:var(--navy);font-size:16px;cursor:pointer;line-height:1">×</button></div></div>';
+
+    h += '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;padding:12px;background:#F7FAFD;border:1px solid var(--hairline);border-radius:10px">';
+    var secOpts = [["alle", "Alle secties"], ["1", "1 · Start en uitvraag"], ["2", "2 · Tijdigheid en aanlevering"], ["3", "3 · Ordernummer"], ["4", "4 · Controle"], ["5", "5 · Koppeling"], ["6", "6 · Bevestiging en einde"], ["flow2", "Flow 2 (buiten scope)"]];
+    h += '<select id="f-sectie" aria-label="Filter op sectie" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--ink);background:#fff">';
+    secOpts.forEach(function (o) { h += '<option value="' + o[0] + '"' + (s.fSectie === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; });
+    h += '</select>';
+    h += '<select id="f-type" aria-label="Filter op type" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--ink);background:#fff">';
+    [["alle", "Alle typen"], ["Klopt niet", "Klopt niet"], ["Aanvulling", "Aanvulling"], ["Vraag", "Vraag"]].forEach(function (o) { h += '<option value="' + o[0] + '"' + (s.fType === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; });
+    h += '</select>';
+    h += '<label style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer"><input type="checkbox" id="f-onaf"' + (s.fOnaf ? ' checked' : '') + ' style="width:15px;height:15px;accent-color:#195AA6">Alleen onafgehandeld</label></div>';
+
+    if (s.ovLoading) h += '<div style="display:flex;align-items:center;gap:10px;padding:18px 4px;font-size:12.5px;color:var(--muted)"><span style="width:16px;height:16px;border:2.5px solid var(--blue100);border-top-color:var(--blue);border-radius:50%;animation:glspin .8s linear infinite"></span>Reacties laden…</div>';
+
+    h += '<div style="margin-top:16px"><div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)">Stemtotalen per element</div><p style="margin:3px 0 10px;font-size:11.5px;color:var(--muted)">Gesorteerd op meeste \'Klopt niet\' bovenaan. Totalen zijn alleen hier zichtbaar.</p>';
+    if (voteTotals.length > 0) {
+      h += '<div style="display:flex;flex-direction:column;gap:6px">';
+      voteTotals.forEach(function (v) {
+        h += '<div style="display:flex;align-items:center;gap:12px;border:1px solid var(--hairline);border-radius:9px;padding:8px 12px"><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.4">' + esc(v.titel) + '</div><div style="font-size:10.5px;color:var(--muted);margin-top:1px">' + esc(v.secLabel) + '</div></div><span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px">✓ ' + v.k + '</span><span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:var(--redbg);color:var(--red);border:1px solid #F2C6C6;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px">✕ ' + v.kn + '</span></div>';
+      });
+      h += '</div>';
+    } else if (!s.ovLoading) {
+      h += '<p style="margin:0;font-size:12.5px;color:var(--muted)">Nog geen stemmen uitgebracht.</p>';
+    }
+    h += '</div>';
+
+    h += '<div style="margin-top:20px"><div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px">Reacties (' + filtered.length + ')</div>';
+    if (filtered.length > 0) {
+      h += '<div style="display:flex;flex-direction:column;gap:8px">';
+      filtered.forEach(function (c) {
+        var rowStyle = "display:flex;gap:10px;border:1px solid #DEE7F0;border-radius:10px;padding:10px 12px;" + (c.afgehandeld ? "opacity:.55;background:#FAFCFE" : "background:#fff");
+        h += '<div style="' + rowStyle + '"><label style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding-top:2px" title="Markeer als afgehandeld"><input type="checkbox"' + (c.afgehandeld ? ' checked' : '') + ' data-done-key="' + esc(c.key) + '" aria-label="Afgehandeld" style="width:16px;height:16px;accent-color:#1F9D6B"></label><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:11px;font-weight:700;color:var(--mainblue);background:var(--blue50);border:1px solid var(--blue200);border-radius:999px;padding:2px 9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(elLabelOf(c.elementId)) + '</span><span style="font-size:10.5px;color:var(--muted)">' + esc(secLabelOf(c.elementId)) + '</span></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px"><span style="font-size:12px;font-weight:700;color:var(--navy)">' + esc(c.naam) + '</span><span style="' + typeChipStyle(c.type) + '">' + esc(c.type) + '</span><span style="font-size:10.5px;color:var(--muted);margin-left:auto">' + esc(fmtTijd(c.tijd)) + '</span></div><div style="font-size:12.5px;line-height:1.6;color:var(--ink);margin-top:5px;white-space:pre-wrap">' + esc(c.tekst) + '</div></div></div>';
+      });
+      h += '</div>';
+    } else if (!s.ovLoading) {
+      h += '<p style="margin:0;font-size:12.5px;color:var(--muted)">Nog geen reacties binnen dit filter. Jij kunt de eerste zijn.</p>';
+    }
+    h += '</div></div>';
+    return h;
+  }
+  function renderOverview() {
+    var root = $("#ov-root");
+    if (!state.ovOpen) { root.innerHTML = ""; return; }
+    root.innerHTML = '<div id="ov-backdrop" role="dialog" aria-label="Reactieoverzicht" data-screen-label="Reactieoverzicht" style="position:fixed;inset:0;z-index:50;background:rgba(18,56,106,.45);overflow-y:auto;padding:4vh 12px 6vh;animation:glfade .16s ease">' + buildOverviewHTML() + '</div>';
+    var bd = $("#ov-backdrop", root);
+    bd.addEventListener("click", function (e) { if (e.target === bd) { state.ovOpen = false; scheduleRender(); } });
+    $("#ov-close", root).addEventListener("click", function () { state.ovOpen = false; scheduleRender(); });
+    $("#ov-refresh", root).addEventListener("click", function () { loadAll(); });
+    $("#ov-csv", root).addEventListener("click", function () { exportCsvNow(); });
+    $("#f-sectie", root).addEventListener("change", function (e) { state.fSectie = e.target.value; scheduleRender(); });
+    $("#f-type", root).addEventListener("change", function (e) { state.fType = e.target.value; scheduleRender(); });
+    $("#f-onaf", root).addEventListener("change", function () { state.fOnaf = !state.fOnaf; scheduleRender(); });
+    root.querySelectorAll("[data-done-key]").forEach(function (chk) {
+      chk.addEventListener("change", function (e) { toggleDoneKey(e.target.getAttribute("data-done-key")); });
+    });
+  }
+
+  /* ---------- toast + banner ---------- */
+  function renderToast() {
+    var root = $("#toast-root");
+    root.innerHTML = state.toast ? '<div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 20px;border-radius:999px;font-size:12.5px;font-weight:600;z-index:60;box-shadow:var(--shadow-lg);animation:glfade .2s ease;white-space:nowrap">' + esc(state.toast) + '</div>' : "";
+  }
+  function renderBanner() {
+    var slot = $("#banner-slot");
+    slot.innerHTML = state.fallback ? '<div role="alert" style="background:var(--amberbg);border-bottom:1px solid var(--amberrand);color:var(--ambertekst);padding:10px 16px;font-size:12.5px;font-weight:600;text-align:center">Gedeelde opslag is niet beschikbaar in deze omgeving. Reacties worden tijdelijk in deze sessie bewaard.</div>' : "";
+  }
+
+  /* ---------- main render (cheap DOM updates) ---------- */
+  function scheduleRender() { if (rraf) return; rraf = requestAnimationFrame(function () { rraf = null; render(); }); }
+  function render() {
+    if (!state.ready) return;
+    renderBanner();
+
+    /* header button label */
+    var lbl = $("#btn-overview-label");
+    if (lbl) lbl.textContent = state.loading ? "Alle reacties (…)" : "Alle reacties (" + state.comments.length + ")";
+
+    /* observations / legend collapse */
+    var obsOpen = state.obsOpen === null ? CFG.observatiesStandaardOpen : state.obsOpen;
+    var legOpen = state.legOpen === null ? CFG.legendaStandaardOpen : state.legOpen;
+    $("#obs-body").style.display = obsOpen ? "" : "none";
+    $("#obs-chev").textContent = obsOpen ? "▲ Inklappen" : "▼ Uitklappen";
+    $("#obs-toggle").setAttribute("aria-expanded", String(obsOpen));
+    $("#leg-body").style.display = legOpen ? "" : "none";
+    $("#leg-chev").textContent = legOpen ? "▲ Inklappen" : "▼ Uitklappen";
+    $("#leg-toggle").setAttribute("aria-expanded", String(legOpen));
+
+    /* nav active */
+    document.querySelectorAll("[data-navchip]").forEach(function (n) {
+      n.setAttribute("data-active", String(state.activeSec === parseInt(n.getAttribute("data-sec"), 10)));
+    });
+
+    /* inner margin for desktop side panel */
+    $("#inner").style.marginRight = (state.sel && !state.sheet) ? "400px" : "0";
+
+    /* element selected state + comment badges */
+    var ccc = commentCounts();
+    document.querySelectorAll("[data-el]").forEach(function (node) {
+      var id = node.getAttribute("data-el");
+      node.setAttribute("data-selected", String(!!(state.sel && state.sel.kind === "el" && state.sel.id === id)));
+    });
+    document.querySelectorAll("[data-cbadge]").forEach(function (b) {
+      var id = b.getAttribute("data-cbadge"); var n = ccc[id] || 0;
+      b.classList.toggle("on", n > 0);
+      var cnt = b.querySelector("[data-cnt]"); if (cnt) cnt.textContent = n;
+    });
+
+    /* branch rows: selected state + comment counts on the four Flow 2 branch chips */
+    document.querySelectorAll("[data-branchrow] [data-connchip]").forEach(function (b) {
+      var id = b.getAttribute("data-conn");
+      b.setAttribute("data-active", String(!!(state.sel && state.sel.kind === "conn" && state.sel.id === id)));
+    });
+    document.querySelectorAll("[data-branchcnt]").forEach(function (sp) {
+      var n = ccc[sp.getAttribute("data-branchcnt")] || 0;
+      sp.classList.toggle("on", n > 0);
+      sp.textContent = n;
+    });
+
+    renderOverlays();
+    renderPanel();
+    renderF2();
+    renderOverview();
+    renderToast();
+
+    /* body scroll lock */
+    var lock = !!((state.sel && state.sheet) || state.ovOpen);
+    if (lock !== wasLock) { wasLock = lock; document.body.style.overflow = lock ? "hidden" : ""; }
+  }
+
+  /* ---------- static content injection + wiring ---------- */
+  function injectBadges() {
+    document.querySelectorAll("[data-el]").forEach(function (node) {
+      var id = node.getAttribute("data-el");
+      if (SPECIAL[id]) return;
+      var isDia = !!DIAMONDS[id];
+      var el = D.elementen[id];
+      if (CFG.toonPijnpunten && el && el.pijnpunten && el.pijnpunten.length) {
+        var ppos = isDia ? "top:2px;right:calc(50% + 18px)" : "top:-11px;left:10px";
+        var span = document.createElement("span");
+        span.style.cssText = "position:absolute;" + ppos + ";display:inline-flex;align-items:center;gap:4px;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:10px;font-weight:700;padding:2.5px 8px;border-radius:999px";
+        span.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 3.5 22 20.5H2Z"></path><path d="M12 10v4.5"></path><path d="M12 17.6h.01"></path></svg>' + el.pijnpunten.length;
+        node.appendChild(span);
+      }
+      var cpos = isDia ? "bottom:2px;left:calc(50% + 18px)" : "bottom:-11px;right:10px";
+      var cb = document.createElement("span");
+      cb.setAttribute("data-cbadge", id);
+      cb.style.cssText = "position:absolute;" + cpos;
+      cb.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg><span data-cnt>0</span>';
+      node.appendChild(cb);
+    });
+  }
+  function wireStatic() {
+    /* observations list */
+    var ul = $("#obs-list");
+    D.observaties.forEach(function (o) { var li = document.createElement("li"); li.style.cssText = "font-size:13px;line-height:1.55;color:var(--ink)"; li.textContent = o; ul.appendChild(li); });
+
+    $("#obs-toggle").addEventListener("click", function () { var cur = state.obsOpen === null ? CFG.observatiesStandaardOpen : state.obsOpen; state.obsOpen = !cur; scheduleRender(); });
+    $("#leg-toggle").addEventListener("click", function () { var cur = state.legOpen === null ? CFG.legendaStandaardOpen : state.legOpen; state.legOpen = !cur; scheduleRender(); });
+    $("#btn-overview").addEventListener("click", function () { state.ovOpen = true; scheduleRender(); loadAll(); });
+
+    document.querySelectorAll("[data-navchip]").forEach(function (n) {
+      n.addEventListener("click", function () {
+        var el = document.getElementById("sec" + n.getAttribute("data-sec"));
+        if (el) window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().top - 58, behavior: "smooth" });
+      });
+    });
+
+    document.querySelectorAll("[data-el]").forEach(function (node) {
+      var id = node.getAttribute("data-el");
+      node.addEventListener("click", function () { select("el", id); });
+      node.addEventListener("mouseenter", function () { state.hoverId = id; renderOverlays(); });
+      node.addEventListener("mouseleave", function () { state.hoverId = null; renderOverlays(); });
+      node.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select("el", id); } });
+    });
+    document.querySelectorAll("[data-branchrow] [data-connchip]").forEach(function (b) {
+      b.addEventListener("click", function () { select("conn", b.getAttribute("data-conn")); });
+    });
+    document.querySelectorAll("[data-f2pill]").forEach(function (b) {
+      b.addEventListener("click", function () { state.f2p = { from: b.getAttribute("data-conn") }; scheduleRender(); });
+    });
+  }
+
+  /* ---------- lifecycle ---------- */
+  function onResize() {
+    var sheet = window.innerWidth < 1024;
+    if (sheet !== state.sheet) { state.sheet = sheet; scheduleRender(); }
+    measure();
+  }
+  function onScroll() {
+    if (sraf) return;
+    sraf = requestAnimationFrame(function () {
+      sraf = null;
+      var act = 1;
+      for (var n = 1; n <= 6; n++) {
+        var el = document.getElementById("sec" + n);
+        if (el && el.getBoundingClientRect().top <= 150) act = n;
+      }
+      if (act !== state.activeSec) { state.activeSec = act; scheduleRender(); }
+    });
+  }
+  function onKey(e) {
+    if (e.key === "Escape") {
+      if (state.f2p) { state.f2p = null; scheduleRender(); }
+      else if (state.ovOpen) { state.ovOpen = false; scheduleRender(); }
+      else if (state.sel) { closePanel(); }
+    }
+  }
+  function init() {
+    injectBadges();
+    wireStatic();
+    state.ready = true;
+    state.sheet = window.innerWidth < 1024;
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("keydown", onKey);
+    var cv = $("#bpm-canvas");
+    if (cv && window.ResizeObserver) { var ro = new ResizeObserver(function () { measure(); }); ro.observe(cv); }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); });
+    setTimeout(measure, 500);
+    setTimeout(measure, 1500);
+    render();
+    measure();
+    initStorage();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+</body>
+</html>
