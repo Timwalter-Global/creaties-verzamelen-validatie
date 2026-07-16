@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Creaties verzamelen · Procesflow toekomstig ontwerp (TO-BE v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&display=swap">
+<style>
+    :root{
+      --navy:#1B4B89; --mainblue:#195AA6; --blue:#0B78BE; --blue50:#EEF7FC; --blue100:#D6EEF9; --blue200:#A7DDF2;
+      --ink:#424241; --muted:#767675; --line:#B6C9DE; --hairline:#DEE7F0;
+      --amber:#B45309; --ambertekst:#8F5B00; --amberbg:#FCF2D9; --amberrand:#F0DCAA;
+      --green:#1F9D6B; --greentekst:#14724E; --greenbg:#E5F5EE;
+      --red:#D23B3B; --redbg:#FBE7E7;
+      /* Global design-system shadow tokens (soft, cool-blue tinted) */
+      --shadow-xs:0 1px 2px rgba(27,75,137,.06);
+      --shadow-sm:0 2px 6px rgba(27,75,137,.08);
+      --shadow-md:0 6px 18px rgba(27,75,137,.10);
+      --shadow-lg:0 14px 38px rgba(27,75,137,.14);
+    }
+    html,body{margin:0;padding:0;background:#fff}
+    body{font-family:'Montserrat','Century Gothic',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+    a{color:#0B78BE;font-weight:600;text-decoration:none}
+    a:hover{text-decoration:underline;color:#195AA6}
+    button,input,select,textarea{font-family:inherit}
+    [data-el]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+    [data-el]:hover{outline:2px solid #0B78BE;outline-offset:3px;border-radius:14px;filter:drop-shadow(0 6px 14px rgba(27,75,137,.16))}
+    [data-el][data-selected="true"]{outline:3px solid #0B78BE;outline-offset:3px;border-radius:14px}
+    [data-connchip]{transition:box-shadow .12s ease,color .12s ease,border-color .12s ease}
+    [data-connchip]:hover{border-color:#0B78BE !important;color:#0B78BE !important;box-shadow:0 2px 8px rgba(27,75,137,.20)}
+    [data-connchip][data-active="true"]{background:#0B78BE !important;border-color:#0B78BE !important;color:#fff !important}
+    [data-navchip][data-active="true"]{background:#1B4B89 !important;border-color:#1B4B89 !important;color:#fff !important}
+    [data-btn-primary]:hover{background:#1E69C0 !important}
+    [data-vbtn="k"][data-on="true"]{background:#1F9D6B !important;color:#fff !important;border-color:#1F9D6B !important}
+    [data-vbtn="kn"][data-on="true"]{background:#D23B3B !important;color:#fff !important;border-color:#D23B3B !important}
+    :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #5BC4E8;outline-offset:2px}
+    @keyframes glpanel{from{transform:translateX(28px);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes glsheet{from{transform:translateY(60px);opacity:.4}to{transform:translateY(0);opacity:1}}
+    @keyframes glfade{from{opacity:0}to{opacity:1}}
+    @keyframes glspin{to{transform:rotate(360deg)}}
+    *,*::before,*::after{box-sizing:border-box}
+    /* comment badges toggle via .on so inline display never fights the hidden state */
+    [data-cbadge]{display:none;align-items:center;gap:4px;background:#fff;color:var(--blue);border:1.5px solid var(--blue);font-size:10px;font-weight:700;padding:2.5px 8px;border-radius:999px;box-shadow:var(--shadow-xs)}
+    [data-cbadge].on{display:inline-flex}
+    /* wide/narrow placement variants of the side blocks (JS toggles on canvas width) */
+    [data-narrow-only]{display:none}
+</style>
+</head>
+<body>
+<div id="inner" style="margin-right:0;transition:margin-right .24s cubic-bezier(.4,0,.2,1)">
+  <div id="banner-slot"></div>
+
+  <header data-screen-label="Header" style="padding:28px 16px 20px">
+    <div style="max-width:1128px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div style="min-width:260px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:8px">Fase 2 · To-be validatie · AI Challenge</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h1 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--navy);line-height:1.2">Creaties verzamelen · Procesflow toekomstig ontwerp</h1>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.1em;padding:5px 11px;border-radius:999px;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);white-space:nowrap">TO-BE · CONCEPT V2 · TER VALIDATIE</span>
+        </div>
+      </div>
+      <button id="btn-overview" data-btn-primary="1" style="display:inline-flex;align-items:center;gap:9px;background:var(--mainblue);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg>
+        <span id="btn-overview-label">Alle reacties (…)</span>
+      </button>
+    </div>
+  </header>
+
+  <div style="padding:0 16px">
+    <div style="max-width:1128px;margin:0 auto">
+      <div style="max-width:840px;font-size:13.5px;line-height:1.7;color:var(--ink)">
+        <p style="margin:0 0 6px"><strong style="color:var(--navy)">Wat dit is.</strong> Het ontwerp van de toekomstige werkwijze voor het verzamelen van creaties, gebouwd op de gevalideerde as-is en de vijf ontwerpprincipes. In deze tweede versie (v2) is de feedback uit ronde 1 verwerkt.</p>
+        <p style="margin:0 0 6px"><strong style="color:var(--navy)">Wat we vragen.</strong> Loop de flow door, klik op stappen én pijlen voor detailinformatie, geef per onderdeel aan of dit gaat werken in de praktijk en plaats waar nodig een comment.</p>
+        <p style="margin:0;font-size:12.5px;color:var(--muted)">Reacties en namen zijn zichtbaar voor iedereen met de link.</p>
+      </div>
+
+      <div style="margin:20px 0 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="border:1px solid var(--hairline);border-radius:12px;background:#fff;box-shadow:var(--shadow-xs)">
+          <button id="info-p-toggle" aria-expanded="false" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:13px 16px;cursor:pointer;text-align:left;gap:12px">
+            <span style="display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--navy)">Ontwerpprincipes
+              <span style="font-size:10.5px;font-weight:700;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:2px 8px">P1–P5</span>
+            </span>
+            <span aria-hidden="true" style="color:var(--blue);font-size:12px;font-weight:700"><span id="info-p-chev">▼ Uitklappen</span></span>
+          </button>
+          <div id="info-p-body" style="display:none">
+            <div style="padding:2px 18px 16px;animation:glfade .18s ease;display:flex;flex-direction:column;gap:10px">
+              <span id="info-p-list" style="display:contents"></span>
+            </div>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--hairline);border-radius:12px;background:#fff;box-shadow:var(--shadow-xs)">
+          <button id="info-s-toggle" aria-expanded="false" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:13px 16px;cursor:pointer;text-align:left;gap:12px">
+            <span style="display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--navy)">Statusmodel
+              <span style="font-size:10.5px;font-weight:700;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:2px 8px">12</span>
+              <span style="display:inline-flex;align-items:center;gap:3px;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:999px">n.t.b.</span>
+            </span>
+            <span aria-hidden="true" style="color:var(--blue);font-size:12px;font-weight:700"><span id="info-s-chev">▼ Uitklappen</span></span>
+          </button>
+          <div id="info-s-body" style="display:none">
+            <div style="padding:2px 18px 16px;animation:glfade .18s ease">
+              <p style="margin:0 0 10px;font-size:12.5px;color:var(--muted)">Elk dossier heeft één actuele status met één eigenaar aan zet. Per status staat tussen haakjes wie aan zet is.</p>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                <span id="info-s-list" style="display:contents"></span>
+              </div>
+              <p style="margin:12px 0 0;font-size:12px;line-height:1.6;color:var(--ink)"><span style="display:inline-flex;align-items:center;gap:3px;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle">n.t.b.</span> Elke status krijgt een maximale doorlooptijd; die normen zijn een invulpunt voor Dirk en Tim.</p>
+              <p style="margin:8px 0 0;font-size:12px;line-height:1.6;color:var(--ink)">De eindverantwoordelijke AM ziet het overzicht van alle lopende dossiers, inclusief dossiers buiten hun doorlooptijdnorm.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--hairline);border-radius:12px;background:#fff;box-shadow:var(--shadow-xs)">
+          <button id="info-v-toggle" aria-expanded="false" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:13px 16px;cursor:pointer;text-align:left;gap:12px">
+            <span style="display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--navy)">Wat verdwijnt ten opzichte van de as-is
+              <span style="font-size:10.5px;font-weight:700;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:2px 8px">5</span>
+            </span>
+            <span aria-hidden="true" style="color:var(--blue);font-size:12px;font-weight:700"><span id="info-v-chev">▼ Uitklappen</span></span>
+          </button>
+          <div id="info-v-body" style="display:none">
+            <div style="padding:2px 18px 16px;animation:glfade .18s ease">
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+                <span id="info-v-list" style="display:contents"></span>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--hairline);border-radius:12px;background:#fff;box-shadow:var(--shadow-xs)">
+          <button id="info-r-toggle" aria-expanded="false" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:13px 16px;cursor:pointer;text-align:left;gap:12px">
+            <span style="display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--navy)">Randvoorwaarden voor succes
+              <span style="font-size:10.5px;font-weight:700;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:2px 8px">5</span>
+              <span style="display:inline-flex;align-items:center;gap:3px;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:999px">n.t.b.</span>
+            </span>
+            <span aria-hidden="true" style="color:var(--blue);font-size:12px;font-weight:700"><span id="info-r-chev">▼ Uitklappen</span></span>
+          </button>
+          <div id="info-r-body" style="display:none">
+            <div style="padding:2px 18px 16px;animation:glfade .18s ease">
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+                <span id="info-r-list" style="display:contents"></span>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav data-screen-label="Sectienavigatie" style="position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--hairline)">
+    <div style="max-width:1128px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:10px 16px">
+      <button data-navchip="1" data-active="true" data-sec="1" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">1</b>Start en dossier</button>
+      <button data-navchip="1" data-active="false" data-sec="2" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">2</b>Uitvraag</button>
+      <button data-navchip="1" data-active="false" data-sec="3" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">3</b>Aanlevering en bewaking</button>
+      <button data-navchip="1" data-active="false" data-sec="4" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">4</b>Parallelle controle</button>
+      <button data-navchip="1" data-active="false" data-sec="5" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">5</b>Koppeling</button>
+      <button data-navchip="1" data-active="false" data-sec="6" style="flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap"><b style="margin-right:5px">6</b>Bevestiging en afronding</button>
+    </div>
+  </nav>
+
+  <div style="padding:12px 16px 0">
+    <div style="max-width:1128px;margin:0 auto;border:1px solid var(--hairline);border-radius:12px;background:#fff">
+      <button id="leg-toggle" aria-expanded="false" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:11px 16px;cursor:pointer;text-align:left;gap:12px">
+        <span style="font-size:12.5px;font-weight:700;color:var(--navy)">Legenda · symbolen, rollen en badges</span>
+        <span aria-hidden="true" style="color:var(--blue);font-size:12px;font-weight:700"><span id="leg-chev">▼ Uitklappen</span></span>
+      </button>
+      <div id="leg-body" style="display:none">
+        <div style="padding:2px 18px 16px;animation:glfade .18s ease">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px 22px">
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--navy);background:var(--blue50)"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Startevent</b><br>Beginpunt; wordt hier automatisch getriggerd.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:20px;height:20px;border-radius:50%;border:3.5px solid var(--green);background:var(--greenbg)"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Eindevent</b><br>Einde: bevestigd en aantoonbaar afgerond.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:32px;height:20px;border-radius:5px;border:1.5px solid var(--navy);background:#fff"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Activiteit</b><br>Een stap die een mens uitvoert.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:32px;height:20px;border-radius:5px;border:1.5px solid var(--navy);background:#fff"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Automatische stap</b><br>Wit vlak met AUTO badge: het systeem voert uit, alles wordt gelogd.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:15px;height:15px;transform:rotate(45deg);background:var(--blue50);border:1.5px solid var(--mainblue);border-radius:2px"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Beslissing (automatisch)</b><br>Ruit: de tool routeert op basis van regels.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center;position:relative"><span style="width:15px;height:15px;transform:rotate(45deg);background:var(--blue50);border:1.5px solid var(--mainblue);border-radius:2px"></span><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);color:var(--mainblue);font-weight:800;font-size:12px;line-height:1">+</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Parallelle splitsing</b><br>Ruit met plus: twee werkpakketten starten tegelijk.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:15px;height:15px;transform:rotate(45deg);background:var(--blue50);border:1.5px solid var(--mainblue);border-radius:2px"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Verzamelgateway</b><br>"Alle akkoord?": wacht tot alle controles zijn afgerond.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><svg width="20" height="24" viewBox="0 0 20 24"><path d="M1 1h12l6 6v16H1Z" fill="#fff" stroke="#1B4B89" stroke-width="1.5"></path><path d="M13 1v6h6" fill="#D6EEF9" stroke="#1B4B89" stroke-width="1.5"></path></svg></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Informatie-artefact</b><br>Doorlopend systeeminzicht buiten de sequentiestroom; verbonden via gestippelde associaties.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:32px;height:20px;border-radius:6px;border:1.5px dashed var(--line);background:transparent"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Groepskader</b><br>Bundelt samenhangende activiteiten (Aanlevering); pijlen kunnen op het kader aankomen.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="width:32px;height:20px;border-radius:5px;border:1.5px dashed #9A9A99;background:#F4F4F3"></span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Zijblok</b><br>Doorlopend deelproces naast de hoofdas (Mutaties, Beheer). Klikbaar.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><svg width="34" height="12" viewBox="0 0 34 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#7D9BC1" stroke-width="2"></line><path d="M27 1.5 33 6 27 10.5Z" fill="#7D9BC1"></path></svg></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Pijl met labelchip</b><br>Verbinding; klik op de chip of stip om te reageren.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><svg width="34" height="12" viewBox="0 0 34 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#7D9BC1" stroke-width="2" stroke-dasharray="5 4"></line><path d="M27 1.5 33 6 27 10.5Z" fill="#7D9BC1"></path></svg></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Gestippelde pijl</b><br>Bewaking, terugval, mutaties of associatie (zonder pijlpunt).</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G2</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Gatebadge</b><br>Verplicht menselijk controlepunt (G0 t/m G4); passeert nooit automatisch.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px">n.t.b.</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Invulpuntchip</b><br>Open invulpunt, wordt in de bouwfase vastgesteld.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="display:inline-flex;align-items:center;gap:3px;background:#fff;color:var(--blue);border:1.5px solid var(--blue);font-size:9px;font-weight:700;padding:2px 6px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg>2</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Commentbadge</b><br>Aantal reacties op dit onderdeel.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px">CM</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">CM</b> · Campagnemanager (badge = eigenaar van de stap).</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px">AM</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">AM</b> · Accountmanager, eindverantwoordelijk voor het gehele proces.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px">AD OPS</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Ad Ops</b> · Ad Operations, ook wel Digitale Planning.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="background:var(--navy);color:#fff;border:1px solid var(--navy);font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px">MARKETING</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Marketing</b> · Marketeers; beoordelen representativiteit bij doorverwijzing door de CM.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">AUTO badge</b> · Automatische stap: de tool (de te bouwen webapplicatie) voert uit; elke actie wordt gelogd.</span></div>
+            <div style="display:flex;align-items:center;gap:11px"><span style="flex:0 0 34px;display:flex;justify-content:center"><span style="background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px">KLANT</span></span><span style="font-size:11.5px;line-height:1.45"><b style="color:var(--navy)">Externe stakeholderchip</b> · Adverteerder, Mediabureau, Designstudio of Klant; alleen getoond waar een externe partij betrokken is.</span></div>
+          </div>
+          <p style="margin:14px 0 0;font-size:11.5px;line-height:1.6;color:var(--muted)">Handelingstypes: <b style="color:var(--navy)">Automatisch</b> (systeem voert uit, wordt gelogd) · <b style="color:var(--navy)">Menselijke gate</b> (verplichte menselijke beslissing; de statusovergang passeert nooit automatisch) · <b style="color:var(--navy)">Uitvoerend</b> (mens voert uit met systeemondersteuning).</p>
+          <p style="margin:8px 0 0;font-size:11.5px;line-height:1.6;color:var(--muted)">Doorlopende ontwerplaag: elke statusovergang, taak, herinnering, upload en linkactie wordt vastgelegd in een event log — de basis voor realtime voortgang, follow-ups, escalatie en de toekomstige agent-gebaseerde workflow. Stemtotalen staan bewust niet op het canvas; je vindt ze in het reactieoverzicht.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bpm-canvas" style="position:relative;margin-top:6px">
+    <div id="arrows-layer" style="position:absolute;top:0;left:0;z-index:1;pointer-events:none"></div>
+    <div id="chips-layer" style="position:absolute;inset:0;z-index:2;pointer-events:none"></div>
+
+    <section id="sec1" data-screen-label="Sectie 1 · Start en dossier" style="position:relative;background:#fff;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 1 · Start en dossier</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="tstart" data-selected="false" role="button" tabindex="0" aria-label="START: Orderbevestiging in Salesforce" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:9px;width:260px;max-width:100%;padding:4px">
+            <div style="font-size:12.5px;font-weight:600;color:var(--navy);text-align:center;line-height:1.45">START: Orderbevestiging in Salesforce</div>
+            <div style="position:relative">
+              <div data-anchor="1" style="width:60px;height:60px;border-radius:50%;border:2px solid var(--navy);background:var(--blue50);box-shadow:var(--shadow-xs)"></div>
+              <span style="position:absolute;top:-4px;left:70px;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+              <span style="position:absolute;top:20px;left:70px;white-space:nowrap;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">KLANT</span>
+              
+            </div>
+          </div>
+
+          <div data-el="t1" data-selected="false" role="button" tabindex="0" aria-label="Dossier automatisch aangemaakt" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4">Dossier automatisch aangemaakt</div>
+            <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+            
+          </div>
+
+          <div data-el="g0" data-selected="false" role="button" tabindex="0" aria-label="Beslissing: Ordernummerkoppeling eenduidig?" style="position:relative;z-index:1;width:290px;max-width:100%;height:148px">
+            <div style="position:absolute;inset:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--mainblue)"></div>
+            <div style="position:absolute;inset:2px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--blue50)"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 58px;text-align:center;font-size:13px;font-weight:600;color:var(--navy);line-height:1.35">Ordernummerkoppeling eenduidig?</div>
+            <span style="position:absolute;top:2px;left:calc(50% + 18px);display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+            
+          </div>
+
+          <div data-el="t1a" data-selected="false" role="button" tabindex="0" aria-label="G0: Ordernummerset bevestigen of corrigeren" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">G0 · Ordernummerset bevestigen of corrigeren</div>
+            <span style="position:absolute;top:-11px;left:10px;display:flex;gap:4px"><span style="display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G0</span><span style="display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2.5px 8px;border-radius:999px">n.t.b.</span></span>
+            <span style="position:absolute;top:-11px;right:10px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span>
+            
+          </div>
+
+          <div data-el="t2" data-selected="false" role="button" tabindex="0" aria-label="Benodigde aanleverspecificaties bepaald" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4">Benodigde aanleverspecificaties bepaald</div>
+            <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+            
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec2" data-screen-label="Sectie 2 · Uitvraag" style="position:relative;background:#F7FAFD;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 2 · Uitvraag</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="t3" data-selected="false" role="button" tabindex="0" aria-label="Uitvraag gegenereerd uit standaardtemplate" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4">Uitvraag gegenereerd uit standaardtemplate</div>
+            <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+            
+          </div>
+
+          <div data-el="g1" data-selected="false" role="button" tabindex="0" aria-label="G1: CM reviewt en verstuurt de uitvraag" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">G1 · CM reviewt en verstuurt de uitvraag</div>
+            <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G1</span>
+            <span style="position:absolute;top:-11px;right:10px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span>
+            <span style="position:absolute;bottom:-11px;left:10px;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px;white-space:nowrap">ADVERTEERDER / MEDIABUREAU</span>
+            
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec3" data-screen-label="Sectie 3 · Aanlevering en bewaking" style="position:relative;background:#fff;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 3 · Aanlevering en bewaking</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-grpframe="1" style="position:relative;width:100%;max-width:620px;border:1.5px dashed var(--line);border-radius:16px;background:rgba(238,247,252,.35);padding:36px 18px 26px;box-sizing:border-box">
+            <span style="position:absolute;top:-10px;left:14px;background:#fff;border:1px solid var(--line);color:var(--navy);font-size:9.5px;font-weight:700;letter-spacing:.14em;padding:2.5px 10px;border-radius:999px">AANLEVERING</span>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;justify-items:center">
+              <div data-el="t4a1" data-selected="false" role="button" tabindex="0" aria-label="Aanleveren via preferred route" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 16px 17px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">Aanleveren via preferred route</div>
+                <span style="position:absolute;top:-11px;right:10px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span>
+                <span style="position:absolute;bottom:-11px;left:10px;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:8.5px;font-weight:700;letter-spacing:.04em;padding:2.5px 8px;border-radius:999px;white-space:nowrap">GLOBALLER · STUDIO · ADVERTEERDER · BUREAU</span>
+                
+              </div>
+              <div data-el="t4a2" data-selected="false" role="button" tabindex="0" aria-label="Aanleveren afgestemd op werkprocessen externe partner" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 16px 17px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">Aanleveren afgestemd op werkprocessen externe partner</div>
+                <span style="position:absolute;top:-11px;right:10px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span>
+                <span style="position:absolute;bottom:-11px;left:10px;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:8.5px;font-weight:700;letter-spacing:.04em;padding:2.5px 8px;border-radius:999px;white-space:nowrap">MEDIABUREAU · ADVERTEERDER</span>
+                
+              </div>
+            </div>
+            <div data-el="t4b" data-selected="false" role="button" tabindex="0" aria-label="Back-upscenario: Globaller uploadt namens de klant" style="position:relative;z-index:1;width:100%;max-width:280px;margin:44px auto 0;background:#F3F4F6;border:1.5px solid #9A9A99;border-radius:10px;padding:17px 16px;text-align:center;box-sizing:border-box">
+              <div style="font-size:13px;font-weight:600;color:#575756;line-height:1.4">Terugval: Globaller uploadt namens de klant</div>
+              <span style="position:absolute;top:-11px;left:12px;background:#575756;color:#fff;font-size:9px;font-weight:700;letter-spacing:.08em;padding:2.5px 9px;border-radius:999px;white-space:nowrap">BACK-UP SCENARIO</span>
+              <span style="position:absolute;bottom:-11px;left:10px;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px;white-space:nowrap">KLANT (AFZENDER)</span>
+              <span style="position:absolute;top:-11px;right:10px;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">AM/CM</span>
+              
+            </div>
+          </div>
+
+          
+            <div data-narrow-only="1" data-el="mut" data-selected="false" role="button" tabindex="0" aria-label="Zijblok: Mutaties vanuit Salesforce" style="position:relative;z-index:1;width:100%;max-width:300px;background:#F4F4F3;border:1.5px dashed #9A9A99;border-radius:10px;padding:13px 14px;text-align:left;box-sizing:border-box">
+              <div style="font-size:12px;font-weight:700;color:#575756;line-height:1.4">Mutaties vanuit Salesforce</div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+                <div style="font-size:10.5px;line-height:1.5;color:#575756"><b>Datumwijziging</b> · deadline herberekend, eigenaren gemeld</div>
+                <div style="font-size:10.5px;line-height:1.5;color:#575756"><b>Annulering</b> · status vervallen, communicatie stopt direct</div>
+              </div>
+              <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+              
+            </div>
+          
+
+          
+            <div data-narrow-only="1" data-el="t5" data-selected="false" role="button" tabindex="0" aria-label="Monitoringoverzicht aanleverproces (informatie-artefact)" style="position:relative;z-index:1;width:100%;max-width:300px">
+              <div style="position:relative;min-height:86px">
+                <div style="position:absolute;inset:0;clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%);background:var(--navy)"></div>
+                <div style="position:absolute;inset:1.5px;clip-path:polygon(0 0,calc(100% - 21px) 0,100% 21px,100% 100%,0 100%);background:#fff"></div>
+                <span style="position:absolute;top:1.5px;right:1.5px;width:20px;height:20px;background:var(--blue100);clip-path:polygon(0 0,0 100%,100% 100%)"></span>
+                <div style="position:relative;padding:14px 28px 12px 16px;text-align:left">
+                  <div style="font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.4">Monitoringoverzicht aanleverproces</div>
+                  <div style="font-size:10px;font-weight:600;color:var(--muted);margin-top:5px;line-height:1.5">Doorlopend systeeminzicht · geen processtap</div>
+                </div>
+              </div>
+              <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2.5px 8px;border-radius:999px">n.t.b.</span>
+              <span style="position:absolute;bottom:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+              
+            </div>
+          
+
+          <div style="position:relative;width:100%;display:flex;justify-content:center;align-items:center;min-height:150px">
+            <div data-el="gpoort" data-selected="false" role="button" tabindex="0" aria-label="Automatische technische controle" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+              <div style="font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4">Automatische technische controle</div>
+              <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+              
+            </div>
+            
+              <div data-wide-only="1" data-el="mut" data-selected="false" role="button" tabindex="0" aria-label="Zijblok: Mutaties vanuit Salesforce" style="position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:1;width:250px;background:#F4F4F3;border:1.5px dashed #9A9A99;border-radius:10px;padding:13px 14px;text-align:left;box-sizing:border-box">
+              <div style="font-size:12px;font-weight:700;color:#575756;line-height:1.4">Mutaties vanuit Salesforce</div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+                <div style="font-size:10.5px;line-height:1.5;color:#575756"><b>Datumwijziging</b> · deadline herberekend, eigenaren gemeld</div>
+                <div style="font-size:10.5px;line-height:1.5;color:#575756"><b>Annulering</b> · status vervallen, communicatie stopt direct</div>
+              </div>
+              <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+              
+              </div>
+            
+            
+              <div data-wide-only="1" data-el="t5" data-selected="false" role="button" tabindex="0" aria-label="Monitoringoverzicht aanleverproces (informatie-artefact)" style="position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:1;width:250px">
+              <div style="position:relative;min-height:86px">
+                <div style="position:absolute;inset:0;clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%);background:var(--navy)"></div>
+                <div style="position:absolute;inset:1.5px;clip-path:polygon(0 0,calc(100% - 21px) 0,100% 21px,100% 100%,0 100%);background:#fff"></div>
+                <span style="position:absolute;top:1.5px;right:1.5px;width:20px;height:20px;background:var(--blue100);clip-path:polygon(0 0,0 100%,100% 100%)"></span>
+                <div style="position:relative;padding:14px 28px 12px 16px;text-align:left">
+                  <div style="font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.4">Monitoringoverzicht aanleverproces</div>
+                  <div style="font-size:10px;font-weight:600;color:var(--muted);margin-top:5px;line-height:1.5">Doorlopend systeeminzicht · geen processtap</div>
+                </div>
+              </div>
+              <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2.5px 8px;border-radius:999px">n.t.b.</span>
+              <span style="position:absolute;bottom:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+              
+              </div>
+            
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec4" data-screen-label="Sectie 4 · Parallelle controle" style="position:relative;background:#F7FAFD;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 4 · Parallelle controle</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="tsplit" data-selected="false" role="button" tabindex="0" aria-label="Parallelle splitsing: Parallelle controle start" style="position:relative;z-index:1;width:290px;max-width:100%;height:148px">
+            <div style="position:absolute;inset:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--mainblue)"></div>
+            <div style="position:absolute;inset:2px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--blue50)"></div>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 58px;text-align:center">
+              <div aria-hidden="true" style="font-size:22px;font-weight:800;color:var(--mainblue);line-height:1">+</div>
+              <div style="font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.3">Parallelle controle start</div>
+            </div>
+            <span style="position:absolute;top:2px;left:calc(50% + 18px);display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+            
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:56px;width:100%;max-width:1010px;align-items:start">
+            <div data-lane="A" style="border:1px solid var(--hairline);background:rgba(255,255,255,.65);border-radius:14px;padding:18px 16px 24px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:20px">Werkpakket Ad Ops <span style="background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:2px 8px;font-size:9px;letter-spacing:.08em">PARALLEL</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:44px">
+                <div data-el="c1" data-selected="false" role="button" tabindex="0" aria-label="G2: Technische beoordeling bij uitzondering" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                  <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">G2 · Technische beoordeling bij uitzondering</div>
+                  <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G2</span>
+                  <span style="position:absolute;top:-11px;right:10px;background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">AD OPS</span>
+                  
+                </div>
+                <div data-el="c2" data-selected="false" role="button" tabindex="0" aria-label="G3: Taboecontrole" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                  <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">G3 · Taboecontrole</div>
+                  <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G3</span>
+                  <span style="position:absolute;top:-11px;right:10px;background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">AD OPS</span>
+                  
+                </div>
+                <div data-el="c3" data-selected="false" role="button" tabindex="0" aria-label="Variantencontrole" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                  <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">Variantencontrole</div>
+                  <span style="position:absolute;top:-11px;right:10px;background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">AD OPS</span>
+                  
+                </div>
+              </div>
+            </div>
+            <div data-lane="B" style="border:1px solid var(--hairline);background:rgba(255,255,255,.65);border-radius:14px;padding:18px 16px 24px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:20px">Representativiteitstoets <span style="background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:2px 8px;font-size:9px;letter-spacing:.08em">PARALLEL</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:44px">
+                <div data-el="c4a" data-selected="false" role="button" tabindex="0" aria-label="Automatische representativiteitstoets (AI-engine)" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                  <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">Automatische representativiteitstoets (AI-engine)</div>
+                  <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2.5px 8px;border-radius:999px">n.t.b.</span>
+                  <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+                  
+                </div>
+                <div data-el="c4b" data-selected="false" role="button" tabindex="0" aria-label="G3: CM beoordeelt representativiteit" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                  <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">G3 · CM beoordeelt representativiteit</div>
+                  <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G3</span>
+                  <span style="position:absolute;top:-11px;right:10px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span>
+                  
+                </div>
+                <div data-el="c4c" data-selected="false" role="button" tabindex="0" aria-label="G3: Marketing beoordeelt representativiteit" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center;box-sizing:border-box">
+                  <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">G3 · Marketing beoordeelt representativiteit</div>
+                  <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G3</span>
+                  <span style="position:absolute;top:-11px;right:10px;background:var(--navy);color:#fff;border:1px solid var(--navy);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">MARKETING</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-el="t7" data-selected="false" role="button" tabindex="0" aria-label="Verzamelgateway: Alle controles akkoord?" style="position:relative;z-index:1;width:290px;max-width:100%;height:148px">
+            <div style="position:absolute;inset:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--mainblue)"></div>
+            <div style="position:absolute;inset:2px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:var(--blue50)"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 58px;text-align:center;font-size:13px;font-weight:600;color:var(--navy);line-height:1.35">Alle controles akkoord?</div>
+            <span style="position:absolute;top:2px;right:calc(50% + 18px);display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+            
+          </div>
+
+          <div style="position:relative;width:100%;display:flex;justify-content:center">
+            <div data-el="t8" data-selected="false" role="button" tabindex="0" aria-label="Gerichte terugkoppeling met gebundelde afkeurredenen" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px 17px;box-shadow:var(--shadow-xs);text-align:center">
+              <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">Gerichte terugkoppeling met gebundelde afkeurredenen</div>
+              <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+              <span style="position:absolute;bottom:-11px;left:10px;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px;white-space:nowrap">AANLEVERENDE PARTIJ</span>
+              
+            </div>
+            
+              <div data-wide-only="1" data-el="beheer" data-selected="false" role="button" tabindex="0" aria-label="Zijblok: Beheer van standaarden" style="position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:1;width:250px;background:#F4F4F3;border:1.5px dashed #9A9A99;border-radius:10px;padding:13px 14px;text-align:left;box-sizing:border-box">
+                <div style="font-size:12px;font-weight:700;color:#575756;line-height:1.4">Beheer van standaarden</div>
+                <div style="font-size:10.5px;line-height:1.5;color:#575756;margin-top:8px">Doorlopend deelproces, buiten de operationele flow. Houdt specificatie-eisen per objecttype, taboechecklist, templates en partnerprofielen actueel met een vast reviewritme.</div>
+                <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2.5px 8px;border-radius:999px">n.t.b.</span>
+                <span style="position:absolute;top:-11px;right:10px;display:flex;gap:4px"><span style="background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">AD OPS</span><span style="background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span></span>
+                
+              </div>
+            
+          </div>
+
+          
+            <div data-narrow-only="1" data-el="beheer" data-selected="false" role="button" tabindex="0" aria-label="Zijblok: Beheer van standaarden" style="position:relative;z-index:1;width:100%;max-width:300px;background:#F4F4F3;border:1.5px dashed #9A9A99;border-radius:10px;padding:13px 14px;text-align:left;box-sizing:border-box">
+              <div style="font-size:12px;font-weight:700;color:#575756;line-height:1.4">Beheer van standaarden</div>
+              <div style="font-size:10.5px;line-height:1.5;color:#575756;margin-top:8px">Doorlopend deelproces, buiten de operationele flow. Houdt specificatie-eisen per objecttype, taboechecklist, templates en partnerprofielen actueel met een vast reviewritme.</div>
+              <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2.5px 8px;border-radius:999px">n.t.b.</span>
+              <span style="position:absolute;top:-11px;right:10px;display:flex;gap:4px"><span style="background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">AD OPS</span><span style="background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span></span>
+              
+            </div>
+          
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec5" data-screen-label="Sectie 5 · Koppeling" style="position:relative;background:#fff;padding:26px 16px 44px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 5 · Koppeling</div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div data-el="t9" data-selected="false" role="button" tabindex="0" aria-label="Koppel de creatie in Broadsign (gCam · toekomst)" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4">Koppel de creatie in Broadsign (gCam · toekomst)</div>
+            <span style="position:absolute;top:-11px;right:10px;background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">AD OPS</span>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec6" data-screen-label="Sectie 6 · Bevestiging en afronding" style="position:relative;background:#F7FAFD;padding:26px 16px 60px">
+      <div style="max-width:1128px;margin:0 auto">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Sectie 6 · Bevestiging en afronding</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:54px">
+
+          <div data-el="t10" data-selected="false" role="button" tabindex="0" aria-label="Klantbevestiging automatisch klaargezet" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4">Klantbevestiging automatisch klaargezet</div>
+            <span style="position:absolute;top:-11px;right:10px;display:inline-flex;align-items:center;gap:3px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"></path></svg>AUTO</span>
+            
+          </div>
+
+          <div data-el="g4" data-selected="false" role="button" tabindex="0" aria-label="G4: CM valideert contactadres, akkoordeert en verstuurt" style="position:relative;z-index:1;width:100%;max-width:300px;background:#fff;border:1.5px solid var(--navy);border-radius:10px;padding:15px 18px 17px;box-shadow:var(--shadow-xs);text-align:center">
+            <div style="font-size:13px;font-weight:600;color:var(--navy);line-height:1.4">G4 · CM valideert contactadres, akkoordeert en verstuurt</div>
+            <span style="position:absolute;top:-11px;left:10px;display:inline-flex;align-items:center;gap:3px;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"></path></svg>G4</span>
+            <span style="position:absolute;top:-11px;right:10px;background:var(--blue50);color:var(--navy);border:1px solid var(--blue200);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2.5px 8px;border-radius:999px">CM</span>
+            <span style="position:absolute;bottom:-11px;left:10px;background:#F4F4F3;color:#575756;border:1px solid #E2E2E1;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2.5px 8px;border-radius:999px;white-space:nowrap">KLANT / CREATIEF BUREAU</span>
+            
+          </div>
+
+          <div data-el="tend" data-selected="false" role="button" tabindex="0" aria-label="EINDE: bevestigd en afgerond" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:9px;width:280px;max-width:100%;padding:4px">
+            <div data-anchor="1" style="width:60px;height:60px;border-radius:50%;border:4px solid var(--green);background:var(--greenbg);box-shadow:var(--shadow-xs)"></div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--greentekst);text-align:center;line-height:1.45">EINDE: bevestigd en afgerond</div>
+            
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer style="padding:22px 16px 40px;text-align:center;font-size:11.5px;color:var(--muted)">Global Media &amp; Entertainment · TO-BE procesvalidatie · v2 na feedbackronde 1 · Reacties worden gedeeld opgeslagen</footer>
+</div>
+
+<div id="panel-root"></div>
+<div id="ov-root"></div>
+<div id="toast-root"></div>
+
+<script>
+/* Procesdata · "Creaties verzamelen" · TO-BE ontwerp v2 · feedbackronde 1 (W1–W11) verwerkt */
+window.PROCESDATA_TOBE_V2 = {
+  secties: [
+    { n: 1, titel: "Start en dossier" },
+    { n: 2, titel: "Uitvraag" },
+    { n: 3, titel: "Aanlevering en bewaking" },
+    { n: 4, titel: "Parallelle controle" },
+    { n: 5, titel: "Koppeling" },
+    { n: 6, titel: "Bevestiging en afronding" }
+  ],
+  elementen: {
+    tstart: {
+      type: "Startevent", sectie: 1,
+      titel: "START: Orderbevestiging in Salesforce",
+      handeling: "Automatisch", eigenaar: "Systeem", extern: "Klant",
+      systemen: "Salesforce (bron) en de tool",
+      omschrijving: "De orderbevestiging van een geboekte campagne in Salesforce triggert automatisch het proces. De CM hoeft niet langer zelf te signaleren dat er iets moet gebeuren.",
+      notities: [
+        { label: "Ontwerpkader · randvoorwaarde", tekst: "Datakwaliteit in Salesforce op vier velden: ordernummers, campagnetype, variantengegevens en klantcontactgegevens. Bij de start van de bouwfase wordt hierop een gerichte kwaliteitscheck gedaan." }
+      ],
+      principes: "P1", vervangt: "s1 (pijnpunt: geen trigger vanuit Salesforce)"
+    },
+    t1: {
+      type: "Activiteit", sectie: 1,
+      titel: "Dossier automatisch aangemaakt",
+      handeling: "Automatisch", eigenaar: "Systeem (namens de eindverantwoordelijke AM)",
+      systemen: "De tool",
+      omschrijving: "De tool maakt een campagnedossier aan met campagnedetails, ordernummers, startdatum en de afgeleide aanleverdeadline (startdatum minus 5 werkdagen). Status: aangemaakt.",
+      principes: "P1, P5", vervangt: "s1 (handmatige start, geen overzicht van openstaande uitvragen)"
+    },
+    g0: {
+      type: "Beslissing", sectie: 1,
+      titel: "Ordernummerkoppeling eenduidig?",
+      handeling: "Automatisch", eigenaar: "Systeem",
+      systemen: "De tool, gekoppeld met Salesforce",
+      omschrijving: "De tool koppelt de ordernummers automatisch uit Salesforce. De koppeling is eenduidig als er precies één passende, actieve ordernummerset is. Takken: EENDUIDIG naar 'Benodigde aanleverspecificaties bepaald' · UITZONDERING naar de menselijke gate G0.",
+      principes: "P1", vervangt: "d2, s3a, s3b (de volledige ordernummercheck achteraf verdwijnt)"
+    },
+    t1a: {
+      type: "Activiteit", sectie: 1,
+      titel: "G0 · Ordernummerset bevestigen of corrigeren",
+      handeling: "Menselijke gate", gate: "G0", eigenaar: "CM",
+      systemen: "De tool (gerichte taak met context)",
+      omschrijving: "Alleen bij een uitzondering (meerdere actieve ordernummers, geen ordernummer gevonden, of een ambigue match) krijgt de CM bij de dossieraanmaak een gerichte taak: bevestig of corrigeer de ordernummerset. De taak bevat de volledige context. Het volume van deze taken is de graadmeter voor de datakwaliteit in Salesforce.",
+      invulpunten: ["De exacte matchregels (wat is eenduidig) worden in de bouwfase vastgelegd."],
+      principes: "P1, P3", vervangt: "d2 (ongerichte teammail, handoff zonder context, meerdere ordernummers handmatig koppelen)"
+    },
+    t2: {
+      type: "Activiteit", sectie: 1,
+      titel: "Benodigde aanleverspecificaties bepaald",
+      handeling: "Automatisch", eigenaar: "Systeem",
+      systemen: "De tool (specificatieprofielen)",
+      omschrijving: "De tool bepaalt welke objecten in de campagne vallen en leidt daaruit af welke aanleverspecificaties van toepassing zijn. Elk objecttype heeft eigen specificaties. De output van deze stap is de concrete lijst met specificatietypes die voor deze campagne aangeleverd moeten worden. Deze lijst is uitbreidbaar: komen er nieuwe objecttypes of specificaties bij, dan groeit de output mee.",
+      notities: [
+        { label: "Notitie", tekst: "De specificatieprofielen worden beheerd in het deelproces Beheer van standaarden (zie het zijblok bij sectie 4)." }
+      ],
+      principes: "P4", vervangt: "s1 (complexe specificaties, zelf uitzoeken wat nodig is), k3 (foute aanleveringen door onervaren adverteerders, deels)"
+    },
+    t3: {
+      type: "Activiteit", sectie: 2,
+      titel: "Uitvraag gegenereerd uit standaardtemplate",
+      handeling: "Automatisch", eigenaar: "Systeem",
+      systemen: "De tool (uitvraaggenerator, unieke aanleverlinks)",
+      omschrijving: "De tool genereert de uitvraag vanuit een kort en praktisch standaardtemplate, klaar om te versturen naar het mediabureau, de adverteerder of het reclamebureau. Het template maakt helder wát er aangeleverd moet worden (de specificatielijst uit de vorige stap) en hóe (de aanleverroute). Hanteert een externe partner vanwege interne processen een eigen manier van aanleveren, dan is die afspraak vastgelegd in het partnerprofiel en wordt deze automatisch in het template verwerkt. Het template bevat een voorbeeldmail die de CM direct kan gebruiken of aanpassen.",
+      notities: [
+        { label: "Ontwerpkader · linkbeveiliging", tekst: "Elke link is uniek per partij, beperkt tot dit ene dossier en alleen tot uploaden, verloopt na afronding of een vaste termijn, is intrekbaar, en elke actie wordt op linkniveau gelogd." },
+        { label: "Ontwerpkader · partnerprofiel", tekst: "Partnerprofiel: per externe partij worden de aanleverafspraken en afwijkende werkprocessen vastgelegd en actueel gehouden (zie Beheer)." }
+      ],
+      principes: "P2, P4", vervangt: "s1 (geen standaardtemplate), k2 en k4 (geen zicht op wie wat doet bij externe partijen: logging per link)"
+    },
+    g1: {
+      type: "Activiteit", sectie: 2,
+      titel: "G1 · CM reviewt en verstuurt de uitvraag",
+      handeling: "Menselijke gate", gate: "G1", eigenaar: "CM", extern: "Adverteerder of Mediabureau (ontvanger)",
+      systemen: "De tool",
+      omschrijving: "De CM controleert de gegenereerde uitvraag, scherpt aan waar nodig op basis van klantkennis en verstuurt met één klik. Status: uitvraag verstuurd, daarna wacht op aanlevering.",
+      notities: [
+        { label: "Interne communicatiestandaard", tekst: "Elk signaal dat de tool aan een interne eigenaar stuurt bevat een korte instructie, de positie in het proces en een directe link naar het dossier in de applicatie." }
+      ],
+      principes: "P3, P4", vervangt: "s1 (kwaliteit van de uitvraag was persoonsafhankelijk)"
+    },
+    t4a1: {
+      type: "Activiteit", sectie: 3,
+      titel: "Aanleveren via preferred route",
+      handeling: "Uitvoerend (extern)", eigenaar: "CM (bewaakt)", extern: "Globaller, Designstudio, Adverteerder of Mediabureau",
+      systemen: "De tool (intake via unieke link: portal of losse webpagina per organization id)",
+      omschrijving: "De voorkeursmethode: de externe partij levert aan via de eigen unieke link (portal of losse webpagina per organization id). De intake dwingt dossierkoppeling, ordernummer, afzenderregistratie en versiebeheer af. Externe gebruikers hoeven nooit in te loggen.",
+      werk: {
+        intro: "Per partnertype (mediabureau, adverteerder, designstudio) wordt geïnventariseerd hoe hun interne aanleverproces werkt, zodat de gewenste flow daarop aansluit. Invulpunt: op te halen bij de partners.",
+        rows: [
+          { partij: "Mediabureau", huidig: "n.t.b. (voorbeeld: eigen traffic-afdeling en aanlevertool)", gewenst: "n.t.b. (voorbeeld: koppeling of import op de unieke link)" },
+          { partij: "Adverteerder", huidig: "n.t.b. (voorbeeld: marketingafdeling levert per mail aan)", gewenst: "n.t.b. (voorbeeld: uploadpagina zonder login)" },
+          { partij: "Designstudio", huidig: "n.t.b. (voorbeeld: levert rechtstreeks vanuit de productiestraat)", gewenst: "n.t.b. (voorbeeld: directe upload in het dossier)" }
+        ]
+      },
+      principes: "P2, P5", vervangt: "k1 tot en met k4 (vier ongestructureerde kanalen), d2 (ontbrekend ordernummer)"
+    },
+    t4a2: {
+      type: "Activiteit", sectie: 3,
+      titel: "Aanleveren afgestemd op werkprocessen externe partner",
+      handeling: "Uitvoerend (extern)", eigenaar: "CM (bewaakt)", extern: "Mediabureau of Adverteerder",
+      systemen: "De tool (intake via de partnerroute uit het partnerprofiel)",
+      omschrijving: "Sommige mediabureaus en adverteerders hebben eigen interne werkprocessen voor het aanleveren van creaties. Voor deze partners sluit de aanleverroute aan op hun werkwijze, vastgelegd in het partnerprofiel; anders volgen ze de route in de praktijk niet. De aanlevering landt ook via deze route in dezelfde intake met dezelfde registratie.",
+      werk: {
+        intro: "Per partnertype (mediabureau, adverteerder, designstudio) wordt geïnventariseerd hoe hun interne aanleverproces werkt, zodat de gewenste flow daarop aansluit. Invulpunt: op te halen bij de partners.",
+        rows: [
+          { partij: "Mediabureau", huidig: "n.t.b. (voorbeeld: eigen traffic-afdeling en aanlevertool)", gewenst: "n.t.b. (voorbeeld: koppeling of import op de unieke link)" },
+          { partij: "Adverteerder", huidig: "n.t.b. (voorbeeld: marketingafdeling levert per mail aan)", gewenst: "n.t.b. (voorbeeld: uploadpagina zonder login)" },
+          { partij: "Designstudio", huidig: "n.t.b. (voorbeeld: levert rechtstreeks vanuit de productiestraat)", gewenst: "n.t.b. (voorbeeld: directe upload in het dossier)" }
+        ]
+      },
+      principes: "P2, P5", vervangt: "k1 tot en met k4 (vier ongestructureerde kanalen), d2 (ontbrekend ordernummer)"
+    },
+    t4b: {
+      type: "Activiteit", sectie: 3,
+      titel: "Terugval: Globaller uploadt namens de klant",
+      handeling: "Uitvoerend", eigenaar: "AM/CM (de Globaller)", extern: "Klant (oorspronkelijke afzender)",
+      systemen: "De tool (interne intake)",
+      omschrijving: "Dit is een back-upscenario. De sterke voorkeur is aanlevering via de twee reguliere routes hierboven. Komt een uiting toch binnen via e-mail, WhatsApp of een ander kanaal, dan uploadt de interne collega deze zelf via de intake in het juiste dossier, namens de klant. Verplicht extra veld: het oorspronkelijke kanaal. Zo blijft de vastlegging intact en wordt het gebruik van deze terugvalroute meetbaar als adoptiesignaal voor het externe kanaal.",
+      principes: "P2, P5", vervangt: "k1 (verzamelen via WhatsApp, mail, WeTransfer en dergelijke)"
+    },
+    t5: {
+      type: "Informatie-artefact (data object)", sectie: 3,
+      titel: "Monitoringoverzicht aanleverproces",
+      handeling: "Doorlopend systeeminzicht (automatisch)", eigenaar: "Systeem · escalatietaak bij CM",
+      systemen: "De tool (monitoring, herinneringen en escalatie)",
+      omschrijving: "Dit is geen activiteit maar een doorlopend systeeminzicht voor de interne Global medewerkers. Het overzicht toont account- en campagnemanagers per klant (mediabureaus en adverteerders): (1) de huidige status van het aanleverproces, (2) of er herinneringen gestuurd moeten worden en of deze al zijn verzonden, en (3) of handmatige actie van de AM of CM nodig is, overzichtelijk weergegeven. Herinneringen aan de aanleverende partij verstuurt het systeem automatisch; bij overschrijding van de deadline ontstaat een escalatietaak bij de CM, daarna volgt de ladder naar de eindverantwoordelijke AM en het dagelijkse overzicht van dossiers buiten hun norm.",
+      invulpunten: ["De maximale doorlooptijd per status wordt door Dirk en Tim vastgesteld."],
+      principes: "P1, P3", vervangt: "d1 (geen signalering), Flow 2 spoor CHASEN (wordt herinneringslus plus gerichte opvolgtaak)"
+    },
+    gpoort: {
+      type: "Activiteit", sectie: 3,
+      titel: "Automatische technische controle",
+      handeling: "Automatisch", eigenaar: "Systeem",
+      systemen: "De tool (automatische technische controle tegen de benodigde specificaties)",
+      omschrijving: "Bij elke aanlevering controleert het systeem automatisch de technische kwaliteit (formaat, afmetingen, duur) tegen de benodigde specificaties. Na deze eerste controle is er geen extra persoon nodig, tenzij de controle wordt afgekeurd. Bij afkeuring krijgt de aanleveraar direct een foutmelding met de reden en kan meteen opnieuw aanleveren.",
+      notities: [
+        { label: "Notatie", tekst: "Bewuste uitzondering op strikte BPMN notatie: deze automatische activiteit routeert zelf (GOEDGEKEURD / AFGEKEURD), omwille van begrijpelijkheid." }
+      ],
+      principes: "P2, P4", vervangt: "d3 (technische fouten worden direct bij aanlevering gevangen in plaats van dagen later ontdekt), k3"
+    },
+    tsplit: {
+      type: "Gateway (parallelle splitsing)", sectie: 4,
+      titel: "Parallelle controle start",
+      handeling: "Automatisch", eigenaar: "Systeem",
+      systemen: "De tool",
+      omschrijving: "Na een goedgekeurde automatische technische controle zet de tool tegelijk twee werkpakketten uit: het Ad Ops pakket en de representativiteitstoets. Status: in controle. Beide eigenaren krijgen een gerichte taak met context.",
+      principes: "P3", vervangt: "Geen 1-op-1 vervanging; verbetering ten opzichte van de as-is: drie sequentiële beslissingen (d3, d4, d5) worden parallel uitgevoerd — kortere doorlooptijd binnen de krappe 5-werkdagenklok."
+    },
+    c1: {
+      type: "Activiteit", sectie: 4,
+      titel: "G2 · Technische beoordeling bij uitzondering",
+      handeling: "Menselijke gate", gate: "G2", eigenaar: "Ad Ops",
+      systemen: "De tool (taak in werkpakket Ad Ops)",
+      omschrijving: "Is de automatische technische controle volledig groen, dan passeert deze stap automatisch en wordt dat gelogd. Alleen bij markeringen of twijfelgevallen die het systeem niet zelf kan vaststellen beoordeelt Ad Ops en geeft het technische akkoord.",
+      principes: "P4", vervangt: "d3 (Check 1: technische specificaties)"
+    },
+    c2: {
+      type: "Activiteit", sectie: 4,
+      titel: "G3 · Taboecontrole",
+      handeling: "Menselijke gate", gate: "G3", eigenaar: "Ad Ops",
+      systemen: "De tool (vaste checklist per locatieprofiel)",
+      omschrijving: "Controle op de afspraken met partners op wier locaties de uiting komt (gemeentes, retailers), aan de hand van een vaste checklist per locatieprofiel. Voorbeeld: in bepaalde gemeentes is reclame voor vlees in de buitenruimte niet toegestaan.",
+      notities: [
+        { label: "Notitie", tekst: "De taboechecklist wordt beheerd in het deelproces Beheer van standaarden." }
+      ],
+      principes: "P4", vervangt: "d4 (geen vaste checklist, zelf bedenken waarop je controleert)"
+    },
+    c3: {
+      type: "Activiteit", sectie: 4,
+      titel: "Variantencontrole",
+      handeling: "Uitvoerend", eigenaar: "Ad Ops",
+      systemen: "De tool (variantenmatrix uit de campagnedetails)",
+      omschrijving: "De tool toont een variantenmatrix uit de campagnedetails (per netwerk, stad, point of interest) en Ad Ops vinkt af dat alle varianten aanwezig en correct zijn.",
+      principes: "P4, P5", vervangt: "d5 (Check 3: overige check)"
+    },
+    c4a: {
+      type: "Activiteit", sectie: 4,
+      titel: "Automatische representativiteitstoets (AI-engine)",
+      handeling: "Automatisch", eigenaar: "Systeem (AI-engine)",
+      systemen: "De tool (AI-engine met businesslogica van de marketeers)",
+      omschrijving: "Deze toets plaatst Global in de rol van partner van de klant. Een AI-engine toetst de uiting op representativiteit op basis van businesslogica die afkomstig is van de marketeers: zij weten hoe een uiting eruit moet zien. De toets levert één van twee uitkomsten: VOLDAAN of VEREIST AANDACHT. Ambitie is dat deze toets volledig autonoom verloopt.",
+      notities: [
+        { label: "Logging", tekst: "De doorlooptijd van elke substap wordt gelogd en is zichtbaar in het Monitoringoverzicht, om onnodige interne vertraging te voorkomen." }
+      ],
+      invulpunten: ["De businesslogica voor de AI-engine wordt in de bouwfase samen met de marketeers vastgelegd."],
+      principes: "P4", vervangt: "d4 (representativiteit was impliciet en persoonsafhankelijk)"
+    },
+    c4b: {
+      type: "Activiteit", sectie: 4,
+      titel: "G3 · CM beoordeelt representativiteit",
+      handeling: "Menselijke gate", gate: "G3", eigenaar: "CM",
+      systemen: "De tool (gerichte taak met context)",
+      omschrijving: "Bij de uitkomst VEREIST AANDACHT gaat de case naar de campagnemanager. De CM beslist eerst of hij de uiting zelfstandig kan beoordelen. Zo ja, dan beoordeelt hij en is de uitkomst voldaan of afgekeurd. Zo nee, dan stuurt hij de case door naar de marketeers.",
+      notities: [
+        { label: "Logging", tekst: "De doorlooptijd van elke substap wordt gelogd en is zichtbaar in het Monitoringoverzicht, om onnodige interne vertraging te voorkomen." }
+      ],
+      principes: "P4", vervangt: "d4 (representativiteit was impliciet en persoonsafhankelijk)"
+    },
+    c4c: {
+      type: "Activiteit", sectie: 4,
+      titel: "G3 · Marketing beoordeelt representativiteit",
+      handeling: "Menselijke gate", gate: "G3", eigenaar: "Marketing",
+      systemen: "De tool (gerichte taak met context)",
+      omschrijving: "De marketeers voeren de handmatige beoordeling uit voor cases die de CM niet zelfstandig kan beoordelen, en geven de uitkomst voldaan of afgekeurd.",
+      notities: [
+        { label: "Logging", tekst: "De doorlooptijd van elke substap wordt gelogd en is zichtbaar in het Monitoringoverzicht, om onnodige interne vertraging te voorkomen." }
+      ],
+      principes: "P4", vervangt: "d4 (representativiteit was impliciet en persoonsafhankelijk)"
+    },
+    t7: {
+      type: "Gateway (verzamel)", sectie: 4,
+      titel: "Alle controles akkoord?",
+      handeling: "Automatisch", eigenaar: "Systeem",
+      systemen: "De tool",
+      omschrijving: "De tool bewaakt dat alle vier de controles zijn afgerond: de representativiteitstoets inclusief eventuele substappen én de parallelle controles (technische beoordeling, taboecontrole, variantencontrole). Keurt één controle af, dan gaat het dossier direct op afgekeurd, vervalt de nog openstaande taak in het andere pakket en worden alle op dat moment bekende afkeurredenen gebundeld. Takken: ALLE AKKOORD naar de koppeling (status: goedgekeurd) · AFKEURING naar de gerichte terugkoppeling.",
+      principes: "P3, P5", vervangt: ""
+    },
+    t8: {
+      type: "Activiteit", sectie: 4,
+      titel: "Gerichte terugkoppeling met gebundelde afkeurredenen",
+      handeling: "Automatisch", eigenaar: "Systeem (verzending), zichtbaar voor CM", extern: "De aanleverende partij",
+      systemen: "De tool (via de unieke link)",
+      omschrijving: "De aanleveraar ontvangt via de eigen link de afkeurredenen uit de checklist en levert een nieuwe versie aan in hetzelfde dossier. Status: afgekeurd, wacht op nieuwe versie. De nieuwe versie doorloopt opnieuw de automatische technische controle en de parallelle controle.",
+      principes: "P2, P3, P5", vervangt: "Flow 2 spoor incorrecte aanlevering (wordt versiebeheer met behoud van eigenaarschap)"
+    },
+    t9: {
+      type: "Activiteit", sectie: 5,
+      titel: "Koppel de creatie in Broadsign (gCam · toekomst)",
+      handeling: "Uitvoerend", eigenaar: "Ad Ops",
+      systemen: "Het koppelsysteem en de tool",
+      omschrijving: "Ad Ops koppelt de goedgekeurde uitingen in het koppelsysteem en zet de dossierstatus op gekoppeld.",
+      notities: [
+        { label: "Systeemagnostisch ontwerp", tekst: "Vandaag is het koppelsysteem Broadsign, over 12 tot 18 maanden gCam. De flow en de tool verwijzen nooit naar het systeem bij naam; bij de overgang verandert alleen de koppeling, niet het proces. Alleen de visualisatie benoemt het systeem concreet, zodat de business direct herkent waar dit gebeurt." }
+      ],
+      principes: "P5", vervangt: "s5 (uitingen koppelen in het systeem)"
+    },
+    t10: {
+      type: "Activiteit", sectie: 6,
+      titel: "Klantbevestiging automatisch klaargezet",
+      handeling: "Automatisch", eigenaar: "Systeem",
+      systemen: "De tool, met read-only koppeling op het Salesforce communicatieverkeer",
+      omschrijving: "Zodra de status op gekoppeld staat, genereert de tool de bevestiging voor de partij die de creaties heeft aangeleverd. Wie dat is (mediabureau, creatiebureau, adverteerder of Globaller namens de klant) is bekend uit de afzenderregistratie van de intake; daar is geen aanname voor nodig. Uitgangspunt: de aanleverende partij ontvangt de bevestiging dat de creaties correct zijn ontvangen en aan alle eisen voldoen. De bevestiging bevat daarnaast de vervolgstappen en gepersonaliseerde campagne-informatie (campagnenaam, startdatum, netwerk of objecten) en sluit af met de boodschap dat de campagne hierna live gaat. Status: wacht op klantbevestiging. De CM ontvangt een signaal met korte instructie en directe link naar het dossier.",
+      principes: "P1, P4", vervangt: "d6 (geen standaardproces, eigen systematiek per persoon)"
+    },
+    g4: {
+      type: "Activiteit", sectie: 6,
+      titel: "G4 · CM valideert contactadres, akkoordeert en verstuurt",
+      handeling: "Menselijke gate", gate: "G4", eigenaar: "CM", extern: "De aanleverende partij (uit de afzenderregistratie van de intake), en waar relevant de adverteerder.",
+      systemen: "De tool (mail vanuit de tool of een vooringevulde mailto)",
+      omschrijving: "De CM kiest en bevestigt het juiste contactadres (er zijn soms meerdere e-mailadressen per klant; de tool toont de gevonden adressen, de keuze wordt gelogd), akkordeert de bevestiging en verstuurt. Verzending en statuszetting zijn samengevoegd waar mogelijk: mail vanuit de tool of een vooringevulde mailto. Wordt er buiten de tool verstuurd, dan volgt een bewuste bevestigingsdialoog die datum en gekozen adres vastlegt. De herinneringen lopen tot de status op uitgevoerd staat; blijft actie uit, dan volgt de escalatieladder (melding aan de AM).",
+      principes: "P3, P5", vervangt: "d6, s6a, s6b (onduidelijk wie bevestigt, geen vastlegging, soms gebeurt het niet, dubbel werk doordat men niet van elkaar weet wie stuurde)"
+    },
+    tend: {
+      type: "Eindevent", sectie: 6,
+      titel: "EINDE: bevestigd en afgerond",
+      handeling: "", eigenaar: "",
+      omschrijving: "Het proces is pas afgerond als de klantbevestiging aantoonbaar is verstuurd en gelogd. Gekoppeld is een status, bevestigd is het einde.",
+      principes: "P5", vervangt: ""
+    },
+    mut: {
+      type: "Zijblok (doorlopend)", sectie: 3,
+      titel: "Mutaties vanuit Salesforce",
+      handeling: "Automatisch", eigenaar: "Systeem · raakt elk actief dossier",
+      systemen: "Salesforce en de tool",
+      omschrijving: "Zonder dit mutatieproces lopen herinneringen door op verschoven of geannuleerde campagnes, met reputatieschade richting de klant als risico.",
+      substappen: [
+        { tekst: "Datumwijziging: de aanleverdeadline wordt herberekend en de eigenaren worden gemeld. Status: gewijzigd, daarna terug naar de actuele processtatus." },
+        { tekst: "Annulering: het dossier gaat op status vervallen en alle uitgaande communicatie (herinneringen, uitvragen) stopt onmiddellijk." }
+      ],
+      principes: "P1, P5", vervangt: ""
+    },
+    beheer: {
+      type: "Zijblok (doorlopend deelproces)", sectie: 4,
+      titel: "Beheer van standaarden (doorlopend, buiten de operationele flow)",
+      handeling: "Uitvoerend", eigenaar: "Ad Ops (taboechecklist en technische specificatieprofielen) · CM team (uitvraagtemplate, voorbeeldmail en bevestigingstekst)",
+      systemen: "De tool (beheeromgeving)",
+      omschrijving: "Standaard tenzij werkt alleen met actuele standaarden. Gemeentes passen beleid aan, campagnetypes veranderen, partners wijzigen hun werkprocessen. Dit deelproces houdt de profielen, checklists, templates en partnerprofielen actueel met een vast reviewritme.",
+      substappen: [
+        { tekst: "Specificatie-eisen per objecttype worden up-to-date gehouden." },
+        { tekst: "Taboechecklist en technische specificatieprofielen worden actueel gehouden (Ad Ops)." },
+        { tekst: "Uitvraagtemplate, voorbeeldmail en bevestigingstekst worden actueel gehouden (CM team)." },
+        { tekst: "Partnerprofielen (aanleverafspraken en werkprocessen van externe partners) worden actueel gehouden." }
+      ],
+      notities: [
+        { label: "Positie in de flow", tekst: "Doorlopend deelproces, buiten de operationele flow. Geen pijlen naar de hoofdas." }
+      ],
+      invulpunten: ["Het reviewritme wordt door Dirk en Tim vastgesteld."],
+      principes: "P4", vervangt: ""
+    }
+  },
+  verbindingen: [
+    { id: "w01", van: "tstart", naar: "t1" },
+    { id: "w02", van: "t1", naar: "g0" },
+    { id: "w03", van: "g0", naar: "t2", label: "EENDUIDIG" },
+    { id: "w04", van: "g0", naar: "t1a", label: "UITZONDERING" },
+    { id: "w05", van: "t1a", naar: "t2" },
+    { id: "w06", van: "t2", naar: "t3" },
+    { id: "w07", van: "t3", naar: "g1" },
+    { id: "w08", van: "g1", naar: "t4a1", label: "PREFERRED" },
+    { id: "w31", van: "g1", naar: "t4a2", label: "AFGESTEMD OP PARTNERPROCES" },
+    { id: "w09", van: "g1", naar: "t4b", label: "TERUGVALROUTE", stippel: true },
+    { id: "w10", van: "t4a1", naar: "gpoort" },
+    { id: "w32", van: "t4a2", naar: "gpoort" },
+    { id: "w11", van: "t4b", naar: "gpoort" },
+    { id: "w12", van: "g1", naar: "t5", label: "BEWAAKT", stippel: true, assoc: true },
+    { id: "w13", van: "t5", naar: "grp", label: "HERINNERING / ESCALATIE", stippel: true, assoc: true },
+    { id: "w14", van: "gpoort", naar: "tsplit", label: "GOEDGEKEURD" },
+    { id: "w15", van: "gpoort", naar: "grp", label: "AFGEKEURD" },
+    { id: "w16", van: "tsplit", naar: "c1" },
+    { id: "w17", van: "tsplit", naar: "c2" },
+    { id: "w18", van: "tsplit", naar: "c3" },
+    { id: "w19", van: "tsplit", naar: "c4a" },
+    { id: "w20", van: "c1", naar: "t7" },
+    { id: "w21", van: "c2", naar: "t7" },
+    { id: "w22", van: "c3", naar: "t7" },
+    { id: "w33", van: "c4a", naar: "t7", label: "VOLDAAN" },
+    { id: "w34", van: "c4a", naar: "c4b", label: "VEREIST AANDACHT" },
+    { id: "w35", van: "c4b", naar: "t7", label: "BEOORDEELD" },
+    { id: "w36", van: "c4b", naar: "c4c", label: "NAAR MARKETING" },
+    { id: "w37", van: "c4c", naar: "t7", label: "BEOORDEELD" },
+    { id: "w24", van: "t7", naar: "t9", label: "ALLE AKKOORD" },
+    { id: "w25", van: "t7", naar: "t8", label: "AFKEURING" },
+    { id: "w26", van: "t8", naar: "grp", label: "NIEUWE VERSIE" },
+    { id: "w27", van: "t9", naar: "t10" },
+    { id: "w28", van: "t10", naar: "g4" },
+    { id: "w29", van: "g4", naar: "tend", label: "VERSTUURD EN GELOGD" },
+    { id: "w30", van: "mut", naar: "t5", label: "RAAKT ELK ACTIEF DOSSIER", stippel: true }
+  ],
+  principes: [
+    { code: "P1", titel: "Het proces start en bewaakt zichzelf", tekst: "Triggers en deadlines komen uit het systeem, niet uit het geheugen van de CM." },
+    { code: "P2", titel: "Eén intakekanaal", tekst: "Alle aanleveringen landen in dezelfde intake, via unieke links per partij, met een interne terugvalroute die gelogd wordt." },
+    { code: "P3", titel: "Elke stap één eigenaar, elke handoff met context", tekst: "Geen berichten aan het hele team, taken landen gericht en worden gevolgd tot afronding." },
+    { code: "P4", titel: "Standaard tenzij", tekst: "Templates, profielen en checklists zijn de norm, afwijken is een bewuste keuze." },
+    { code: "P5", titel: "Status altijd zichtbaar, afronding aantoonbaar", tekst: "Elk dossier heeft één actuele status met één eigenaar aan zet, en alles wordt gelogd in de event log." },
+    { code: "LOG", titel: "De event log is bewust agent-ready", tekst: "Een toekomstige agent-gebaseerde workflow (statusbewaking, proactief contact met AM en CM) draait op deze log en het statusmodel, zonder herontwerp van de flow." }
+  ],
+  statussen: [
+    { n: 1, naam: "Aangemaakt", eigenaar: "systeem" },
+    { n: 2, naam: "Uitvraag klaar voor review", eigenaar: "CM" },
+    { n: 3, naam: "Uitvraag verstuurd", eigenaar: "extern aan zet" },
+    { n: 4, naam: "Wacht op aanlevering", eigenaar: "extern aan zet" },
+    { n: 5, naam: "In controle", eigenaar: "Ad Ops en CM" },
+    { n: 6, naam: "Afgekeurd, wacht op nieuwe versie", eigenaar: "extern aan zet" },
+    { n: 7, naam: "Goedgekeurd", eigenaar: "Ad Ops" },
+    { n: 8, naam: "Gekoppeld", eigenaar: "Ad Ops" },
+    { n: 9, naam: "Wacht op klantbevestiging", eigenaar: "CM" },
+    { n: 10, naam: "Afgerond", eigenaar: "—" },
+    { n: 11, naam: "Vervallen", eigenaar: "bij annulering" },
+    { n: 12, naam: "Gewijzigd", eigenaar: "bij datumwijziging, systeem herberekent" }
+  ],
+  verdwijnt: [
+    "De ordernummercheck achteraf verdwijnt, inclusief de ongerichte mail naar alle CM's en het handmatige naleveren: de link dwingt de dossierkoppeling af bij de intake.",
+    "De beslissing “wie reageert op de klant” verdwijnt: de bevestiging is een toegewezen, verplichte stap met vastlegging.",
+    "Flow 2 verdwijnt als apart naloopproces: chasen wordt een geautomatiseerde herinneringslus met escalatie, incorrecte aanlevering wordt versiebeheer binnen het dossier.",
+    "De vier parallelle kanaalstappen klappen samen tot één intake met afzenderkenmerk en kanaallogging.",
+    "Het zoeken in generieke aanleverspecificaties verdwijnt: de klant ontvangt alleen het relevante specificatieprofiel."
+  ],
+  randvoorwaarden: [
+    { tekst: "Specificatie-eisen per objecttype worden up-to-date gehouden.", ntb: false },
+    { tekst: "Taboechecklist en technische specificatieprofielen worden actueel gehouden (Ad Ops).", ntb: false },
+    { tekst: "Uitvraagtemplate, voorbeeldmail en bevestigingstekst worden actueel gehouden (CM team).", ntb: false },
+    { tekst: "Partnerprofielen (aanleverafspraken en werkprocessen van externe partners) worden actueel gehouden.", ntb: false },
+    { tekst: "Reviewritme: invulpunt voor Dirk en Tim.", ntb: true }
+  ]
+};
+</script>
+
+<script>
+/* ============================================================
+   App logic — vanilla port of the "Procesflow TO-BE v2" component.
+   Faithful to the original: DOM-measured arrow-routing geometry
+   (incl. parallel lanes, group frame and side blocks), shared
+   storage (Supabase REST) with in-memory fallback, detail panel
+   and reactions overview with CSV export.
+   ============================================================ */
+(function () {
+  "use strict";
+  var D = window.PROCESDATA_TOBE_V2;
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+
+  /* Config (mirrors the design-component props / defaults) */
+  var CFG = { toonInvulpunten: true, infoblokkenStandaardOpen: false, legendaStandaardOpen: false };
+
+  var DIAMONDS = { g0: 1, tsplit: 1, t7: 1 };
+  /* per-element comment-badge positions that differ from the default bottom-right */
+  var BADGE_POS = {
+    tstart: "bottom:-6px;left:70px",
+    tend: "top:-6px;right:14px",
+    t4a1: "top:-11px;left:10px",
+    t4a2: "top:-11px;left:10px"
+  };
+  var SVG_NS = "http://www.w3.org/2000/svg";
+
+  var state = {
+    ready: false, geo: null, narrow: false, sheet: false,
+    sel: null, hoverId: null, activeSec: 1,
+    personName: "", draftType: "Klopt niet", draftText: "",
+    voteMsg: "", voteWarn: "", commentWarn: "", commentMsg: "",
+    comments: [], votes: [], loaded: false, loading: true, fallback: false,
+    ovOpen: false, fSectie: "alle", fType: "alle", fOnaf: false, ovLoading: false,
+    infoP: null, infoS: null, infoV: null, infoR: null, legOpen: null, toast: "", dragY: 0
+  };
+
+  var memComments = [], memVotes = [], useShared = false, alive = true;
+  var mraf = null, sraf = null, rraf = null, geoKey = "", panelKey = null, panelDirty = false;
+  var wasLock = false, toastT = null, dragStartY = 0;
+
+  /* ---------- helpers ---------- */
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function slug(naam) {
+    return String(naam).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  }
+  function fmtTijd(iso) {
+    try { return new Date(iso).toLocaleString("nl-NL", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return String(iso); }
+  }
+  function secKeyOf(id) {
+    var el = D.elementen[id];
+    if (el) return String(el.sectie);
+    var c = D.verbindingen.find(function (v) { return v.id === id; });
+    if (c) { var fe = D.elementen[c.van]; return fe ? String(fe.sectie) : "1"; }
+    return "1";
+  }
+  function secLabelOf(id) {
+    var k = secKeyOf(id);
+    var s = D.secties.find(function (x) { return String(x.n) === k; });
+    return s ? "Sectie " + s.n + " · " + s.titel : "";
+  }
+  function endNaam(id) {
+    var el = D.elementen[id];
+    if (el) return el.titel;
+    return id === "grp" ? "groepskader Aanlevering" : id;
+  }
+  function elLabelOf(id) {
+    var el = D.elementen[id];
+    if (el) return (id === "gpoort" ? "" : id + " · ") + el.titel;
+    var c = D.verbindingen.find(function (v) { return v.id === id; });
+    if (c) return "Verbinding " + id + " (" + endNaam(c.van) + " → " + endNaam(c.naar) + ")" + (c.label ? " · " + c.label : "");
+    return id;
+  }
+  function typeChipStyle(type) {
+    var base = "font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:999px;";
+    if (type === "Klopt niet") return base + "background:#FBE7E7;color:#D23B3B;border:1px solid #F2C6C6";
+    if (type === "Vraag") return base + "background:#FCF2D9;color:#8F5B00;border:1px solid #F0DCAA";
+    return base + "background:#EEF7FC;color:#1B4B89;border:1px solid #A7DDF2";
+  }
+  function commentCounts() {
+    var m = {}; state.comments.forEach(function (c) { m[c.elementId] = (m[c.elementId] || 0) + 1; }); return m;
+  }
+  function showToast(msg) {
+    clearTimeout(toastT);
+    state.toast = msg; renderToast();
+    toastT = setTimeout(function () { if (alive) { state.toast = ""; renderToast(); } }, 3500);
+  }
+
+  /* ---------- storage (Supabase REST + memory fallback) ---------- */
+  var SUPA_URL = "https://oenfktekinmrsehfzdva.supabase.co";
+  var SUPA_KEY = "sb_publishable_mgbVOTLLpxUBvnv8BOXDKQ_cPN9AJxx"; /* publishable key: veilig om client-side te gebruiken; RLS beschermt de data */
+  var T_COMMENTS = "to_be_comments", T_VOTES = "to_be_votes"; /* aparte tabellen, zodat to-be-reacties niet mengen met de as-is */
+  function supaFetch(path, opts) {
+    opts = opts || {};
+    var headers = Object.assign({
+      apikey: SUPA_KEY,
+      Authorization: "Bearer " + SUPA_KEY,
+      "Content-Type": "application/json"
+    }, opts.headers || {});
+    return fetch(SUPA_URL + "/rest/v1/" + path, Object.assign({}, opts, { headers: headers }));
+  }
+  function degrade() { useShared = false; state.fallback = true; scheduleRender(); }
+  function rowToComment(r) { return { key: r.key, elementId: r.element_id, naam: r.naam, type: r.type, tekst: r.tekst, tijd: r.tijd, afgehandeld: !!r.afgehandeld }; }
+  function rowToVote(r) { return { key: r.key, elementId: r.element_id, naam: r.naam, stem: r.stem, tijd: r.tijd }; }
+
+  async function initStorage() {
+    var ok = false;
+    try {
+      var r = await supaFetch(T_COMMENTS + "?select=key&limit=1", { method: "GET" });
+      ok = r.ok;
+    } catch (e) { ok = false; }
+    useShared = ok;
+    if (!ok) degrade();
+    await loadAll();
+  }
+  async function stInsertComment(key, rec) {
+    if (useShared) {
+      try {
+        var r = await supaFetch(T_COMMENTS, {
+          method: "POST",
+          headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({ key: key, element_id: rec.elementId, naam: rec.naam, type: rec.type, tekst: rec.tekst, tijd: rec.tijd, afgehandeld: false })
+        });
+        if (r.ok) return;
+      } catch (e) {}
+      degrade();
+    }
+    memComments.push(Object.assign({ key: key }, rec));
+  }
+  async function stUpsertVote(key, rec) {
+    if (useShared) {
+      try {
+        var r = await supaFetch(T_VOTES + "?on_conflict=key", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify({ key: key, element_id: rec.elementId, naam_slug: slug(rec.naam), naam: rec.naam, stem: rec.stem, tijd: rec.tijd })
+        });
+        if (r.ok) return;
+      } catch (e) {}
+      degrade();
+    }
+    memVotes = memVotes.filter(function (v) { return v.key !== key; }).concat([Object.assign({ key: key }, rec)]);
+  }
+  async function stSetDone(key, val) {
+    if (useShared) {
+      try {
+        var r = await supaFetch(T_COMMENTS + "?key=eq." + encodeURIComponent(key), {
+          method: "PATCH",
+          headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({ afgehandeld: val })
+        });
+        if (r.ok) return;
+      } catch (e) {}
+      degrade();
+    }
+    memComments = memComments.map(function (c) { return c.key === key ? Object.assign({}, c, { afgehandeld: val }) : c; });
+  }
+  async function loadAll() {
+    state.loading = true; state.ovLoading = true; scheduleRender();
+    var comments = [], votes = [];
+    if (useShared) {
+      try {
+        var rc = await supaFetch(T_COMMENTS + "?select=*&order=tijd.asc", { method: "GET" });
+        var rv = await supaFetch(T_VOTES + "?select=*", { method: "GET" });
+        if (!rc.ok || !rv.ok) throw new Error("load " + rc.status + "/" + rv.status);
+        comments = (await rc.json()).map(rowToComment);
+        votes = (await rv.json()).map(rowToVote);
+      } catch (e) { degrade(); }
+    }
+    if (!useShared) { comments = memComments.slice(); votes = memVotes.slice(); }
+    comments.sort(function (a, b) { return String(a.tijd).localeCompare(String(b.tijd)); });
+    if (alive) { state.comments = comments; state.votes = votes; state.loading = false; state.loaded = true; state.ovLoading = false; panelDirty = true; scheduleRender(); }
+  }
+
+  /* ---------- selection & actions ---------- */
+  function select(kind, id) {
+    state.sel = { kind: kind, id: id };
+    state.voteMsg = ""; state.voteWarn = ""; state.commentWarn = ""; state.commentMsg = ""; state.dragY = 0;
+    scheduleRender();
+  }
+  function closePanel() { state.sel = null; scheduleRender(); }
+
+  async function vote(stem) {
+    var sel = state.sel;
+    if (!sel || sel.kind !== "el") return;
+    var naam = state.personName.trim();
+    if (!naam) { state.voteWarn = "Vul eerst je naam in om te kunnen stemmen."; state.voteMsg = ""; panelDirty = true; scheduleRender(); return; }
+    var key = "vote:" + sel.id + ":" + slug(naam);
+    var rec = { elementId: sel.id, naam: naam, stem: stem, tijd: new Date().toISOString() };
+    await stUpsertVote(key, rec);
+    state.votes = state.votes.filter(function (v) { return v.key !== key; }).concat([Object.assign({ key: key }, rec)]);
+    state.voteMsg = "Je stem is opgeslagen."; state.voteWarn = ""; panelDirty = true; scheduleRender();
+  }
+  async function submit() {
+    var sel = state.sel;
+    if (!sel) return;
+    var naam = state.personName.trim();
+    var tekst = state.draftText.trim();
+    if (!naam) { state.commentWarn = "Vul eerst je naam in."; state.commentMsg = ""; panelDirty = true; scheduleRender(); return; }
+    if (!tekst) { state.commentWarn = "Schrijf eerst een reactie."; state.commentMsg = ""; panelDirty = true; scheduleRender(); return; }
+    var key = "comment:" + sel.id + ":" + Date.now() + "-" + Math.random().toString(36).slice(2, 6);
+    var rec = { elementId: sel.id, naam: naam, type: state.draftType, tekst: tekst, tijd: new Date().toISOString(), afgehandeld: false };
+    await stInsertComment(key, rec);
+    state.comments = state.comments.concat([Object.assign({ key: key }, rec)]);
+    state.draftText = ""; state.commentWarn = ""; state.commentMsg = "Reactie geplaatst.";
+    panelDirty = true; scheduleRender();
+  }
+  async function toggleDoneKey(key) {
+    var c = state.comments.find(function (x) { return x.key === key; });
+    if (!c) return;
+    var rec = { elementId: c.elementId, naam: c.naam, type: c.type, tekst: c.tekst, tijd: c.tijd, afgehandeld: !c.afgehandeld };
+    await stSetDone(key, rec.afgehandeld);
+    state.comments = state.comments.map(function (x) { return x.key === key ? Object.assign({ key: key }, rec) : x; });
+    panelDirty = true; scheduleRender();
+  }
+  function exportCsvNow() {
+    var escv = function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; };
+    var rows = [["soort", "element", "sectie", "naam", "type of stem", "tekst", "tijdstip", "afgehandeld"]];
+    state.comments.forEach(function (c) { rows.push(["Reactie", elLabelOf(c.elementId), secLabelOf(c.elementId), c.naam, c.type, c.tekst, fmtTijd(c.tijd), c.afgehandeld ? "ja" : "nee"]); });
+    state.votes.forEach(function (v) { rows.push(["Stem", elLabelOf(v.elementId), secLabelOf(v.elementId), v.naam, v.stem === "klopt" ? "Klopt" : "Klopt niet", "", fmtTijd(v.tijd), ""]); });
+    var csv = "﻿" + rows.map(function (r) { return r.map(escv).join(";"); }).join("\r\n");
+    try {
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "reacties-creaties-verzamelen-to-be-v2.csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      showToast("CSV gedownload.");
+    } catch (e) {
+      var cb = navigator.clipboard;
+      if (cb && cb.writeText) cb.writeText(csv).then(function () { showToast("Downloaden lukte niet; CSV gekopieerd naar het klembord."); }).catch(function () { showToast("Export mislukt in deze omgeving."); });
+      else showToast("Export mislukt in deze omgeving.");
+    }
+  }
+
+  /* ---------- responsive variants (wide/narrow placement of side blocks) ---------- */
+  function applyVariants() {
+    /* explicit values: the stylesheet hides [data-narrow-only] by default */
+    document.querySelectorAll("[data-wide-only]").forEach(function (n) { n.style.display = state.narrow ? "none" : "block"; });
+    document.querySelectorAll("[data-narrow-only]").forEach(function (n) { n.style.display = state.narrow ? "block" : "none"; });
+  }
+
+  /* ---------- geometry ---------- */
+  function measure() { if (mraf) return; mraf = requestAnimationFrame(function () { mraf = null; measureNow(); }); }
+  function measureNow() {
+    if (!D || !alive) return;
+    var cv = $("#bpm-canvas"); if (!cv) return;
+    var cw = cv.clientWidth; if (!cw) return;
+    var narrow = cw < 1200;
+    if (narrow !== state.narrow) { state.narrow = narrow; applyVariants(); measure(); return; }
+    var cr = cv.getBoundingClientRect();
+    var R = {};
+    var grab = function (id) {
+      var els = cv.querySelectorAll('[data-el="' + id + '"]');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el.offsetWidth > 0) {
+          var a = el.querySelector("[data-anchor]") || el;
+          var r = a.getBoundingClientRect();
+          return { l: r.left - cr.left, t: r.top - cr.top, r: r.right - cr.left, b: r.bottom - cr.top, w: r.width, h: r.height, cx: r.left - cr.left + r.width / 2, cy: r.top - cr.top + r.height / 2 };
+        }
+      }
+      return null;
+    };
+    Object.keys(D.elementen).forEach(function (id) { R[id] = grab(id); });
+    var lanes = {};
+    cv.querySelectorAll("[data-lane]").forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      lanes[el.getAttribute("data-lane")] = { l: r.left - cr.left, t: r.top - cr.top, r: r.right - cr.left, b: r.bottom - cr.top };
+    });
+    var gf = cv.querySelector("[data-grpframe]");
+    if (gf && gf.offsetWidth > 0) {
+      var gr = gf.getBoundingClientRect();
+      R.grp = { l: gr.left - cr.left, t: gr.top - cr.top, r: gr.right - cr.left, b: gr.bottom - cr.top, w: gr.width, h: gr.height, cx: gr.left - cr.left + gr.width / 2, cy: gr.top - cr.top + gr.height / 2 };
+    } else { R.grp = null; }
+    var geo = buildGeo(R, narrow, cw, Math.round(cr.height), lanes);
+    var key = JSON.stringify(geo);
+    if (key !== geoKey) { geoKey = key; state.geo = geo; renderOverlays(); }
+  }
+  function buildGeo(R, narrow, w, h, lanes) {
+    var conns = [];
+    var A = lanes && lanes.A, B = lanes && lanes.B;
+    var sideBy = !!(A && B && B.l > A.r - 4);
+    var beside = !!(R.t4a1 && R.t4a2 && R.t4a2.l > R.t4a1.r - 8);
+    var t5side = !!(R.t5 && R.gpoort && R.t5.l > R.gpoort.r - 8);
+    var G = R.grp;
+    var clR = function (x) { return Math.min(w - 10, x); };
+    var clL = function (x) { return Math.max(8, x); };
+    for (var ci = 0; ci < D.verbindingen.length; ci++) {
+      var c = D.verbindingen[ci];
+      var f = R[c.van], t = c.naar === "grp" ? G : R[c.naar];
+      if (!f || !t) continue;
+      var pts = null, chipSeg = -1, cpo = null;
+      var id = c.id, X, mY, yF, yJ, yE, yB, midY;
+      if (id === "w03" && R.t1a) {
+        X = clL(Math.min(f.l, t.l, R.t1a.l) - 34);
+        pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+      } else if (id === "w08" && beside && G) {
+        mY = Math.min((f.b + t.t) / 2, G.t - 14);
+        pts = [[f.cx - 60, f.b], [f.cx - 60, mY], [t.cx, mY], [t.cx, t.t]];
+        chipSeg = 1;
+      } else if (id === "w31" && G) {
+        if (beside) {
+          mY = Math.min((f.b + t.t) / 2, G.t - 14);
+          pts = [[f.cx + 60, f.b], [f.cx + 60, mY], [t.cx, mY], [t.cx, t.t]];
+          chipSeg = 1;
+        } else {
+          X = clR(Math.max(f.r, t.r, G.r) + 18);
+          pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+        }
+      } else if (id === "w09" && G) {
+        if (beside) {
+          if (Math.abs(f.cx - t.cx) < 10) pts = [[f.cx, f.b], [f.cx, t.t]];
+          else pts = [[f.cx, f.b], [f.cx, G.t - 16], [t.cx, G.t - 16], [t.cx, t.t]];
+          cpo = { x: f.cx, y: (f.b + G.t) / 2 };
+        } else {
+          X = clL(Math.min(f.l, t.l, G.l) - 38);
+          pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+        }
+      } else if (id === "w10" && G) {
+        if (beside) {
+          yF = (G.b + t.t) / 2;
+          pts = [[f.cx - 50, f.b], [f.cx - 50, yF], [t.cx - 46, yF], [t.cx - 46, t.t]];
+        } else {
+          X = clL(Math.min(f.l, t.l, G.l) - 22);
+          pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+        }
+      } else if (id === "w32" && G) {
+        if (beside) {
+          yF = (G.b + t.t) / 2;
+          pts = [[f.cx + 50, f.b], [f.cx + 50, yF], [t.cx + 46, yF], [t.cx + 46, t.t]];
+        } else {
+          X = clR(Math.max(f.r, t.r, G.r) + 34);
+          pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+        }
+      } else if (id === "w12") {
+        if (t5side) {
+          pts = [[f.r, f.cy], [t.cx + 34, f.cy], [t.cx + 34, t.t]];
+          chipSeg = 0;
+        } else {
+          X = clR(Math.max(G ? G.r : 0, t.r, R.mut ? R.mut.r : 0) + 46);
+          pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+        }
+      } else if (id === "w13" && G) {
+        if (t5side) {
+          yE = G.b - 28;
+          pts = [[f.cx - 34, f.t], [f.cx - 34, yE], [G.r, yE]];
+          cpo = { x: f.cx - 34, y: (f.t + yE) / 2 };
+        } else {
+          X = clL(Math.min(f.l, G.l, R.mut ? R.mut.l : 1e9) - 22);
+          pts = [[f.l, f.cy], [X, f.cy], [X, G.cy + 40], [G.l, G.cy + 40]];
+        }
+      } else if (id === "w15" && G) {
+        if (beside) {
+          pts = [[f.l, f.cy], [G.l + 60, f.cy], [G.l + 60, G.b]];
+        } else {
+          X = clL(Math.min(f.l, G.l, R.t5 ? R.t5.l : 1e9, R.mut ? R.mut.l : 1e9) - 38);
+          pts = [[f.l, f.cy], [X, f.cy], [X, G.b - 30], [G.l, G.b - 30]];
+        }
+      } else if (id === "w26" && G) {
+        X = clR(Math.max(f.r, R.t5 ? R.t5.r : 0, R.gpoort ? R.gpoort.r : 0, B ? B.r : 0, A ? A.r : 0) + 16);
+        pts = [[f.r, f.cy], [X, f.cy], [X, G.b - 64], [G.r, G.b - 64]];
+        chipSeg = 1;
+      } else if (id === "w17" && R.c2) {
+        if (sideBy) pts = [[f.cx, f.b], [f.cx, R.c2.cy - 12], [R.c2.r, R.c2.cy - 12]];
+        else { X = clL(Math.min(R.c1 ? R.c1.l : t.l, t.l) - 22); pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]]; }
+      } else if (id === "w18" && R.c3) {
+        if (sideBy) pts = [[f.cx, f.b], [f.cx, R.c3.cy - 12], [R.c3.r, R.c3.cy - 12]];
+        else { X = clL(Math.min(R.c1 ? R.c1.l : t.l, t.l) - 38); pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]]; }
+      } else if (id === "w19" && !sideBy && R.c1) {
+        X = clL(Math.min(R.c1.l, t.l) - 70);
+        pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+      } else if (id === "w20" && R.c1) {
+        if (sideBy && A) {
+          X = A.r + 14; yJ = t.t - 34;
+          pts = [[f.r, f.cy], [X, f.cy], [X, yJ], [t.cx, yJ], [t.cx, t.t]];
+        } else {
+          X = clR(Math.max(R.c1.r, R.c2 ? R.c2.r : 0, R.c3 ? R.c3.r : 0, R.c4a ? R.c4a.r : 0, t.r) + 22);
+          pts = [[f.r, f.cy], [X, f.cy], [X, t.cy - 10], [t.r, t.cy - 10]];
+        }
+      } else if (id === "w21" && R.c2) {
+        if (sideBy && A) {
+          X = A.r + 46; yJ = t.t - 34;
+          pts = [[f.r, f.cy + 12], [X, f.cy + 12], [X, yJ], [t.cx, yJ], [t.cx, t.t]];
+        } else {
+          X = clR(Math.max(R.c1 ? R.c1.r : 0, R.c2.r, R.c3 ? R.c3.r : 0, R.c4a ? R.c4a.r : 0, t.r) + 38);
+          pts = [[f.r, f.cy], [X, f.cy], [X, t.cy], [t.r, t.cy]];
+        }
+      } else if (id === "w22" && !sideBy && R.c3) {
+        X = clR(Math.max(f.r, R.c4a ? R.c4a.r : 0, t.r) + 54);
+        pts = [[f.r, f.cy], [X, f.cy], [X, t.cy + 10], [t.r, t.cy + 10]];
+      } else if (id === "w33") {
+        if (sideBy) {
+          yJ = t.t - 30;
+          pts = [[f.r, f.cy], [f.r + 62, f.cy], [f.r + 62, yJ], [t.cx + 66, yJ], [t.cx + 66, t.t + 34]];
+          cpo = { x: f.r + 62, y: (f.cy + yJ) / 2 };
+        } else {
+          X = clL(Math.min(f.l, t.l) - 54);
+          pts = [[f.l, f.cy], [X, f.cy], [X, t.cy - 10], [t.l, t.cy - 10]];
+        }
+      } else if (id === "w35") {
+        if (sideBy) {
+          yJ = t.t - 44;
+          pts = [[f.r, f.cy], [f.r + 34, f.cy], [f.r + 34, yJ], [t.cx + 44, yJ], [t.cx + 44, t.t + 23]];
+          cpo = { x: f.r + 34, y: (f.cy + yJ) / 2 };
+        } else {
+          X = clL(Math.min(f.l, t.l) - 38);
+          pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+        }
+      } else if (id === "w37") {
+        if (sideBy) {
+          yJ = t.t - 58;
+          pts = [[f.cx, f.b], [f.cx, yJ], [t.cx + 22, yJ], [t.cx + 22, t.t + 11]];
+          cpo = { x: f.cx, y: (f.b + yJ) / 2 };
+        } else {
+          X = clL(Math.min(f.l, t.l) - 22);
+          pts = [[f.l, f.cy], [X, f.cy], [X, t.cy + 10], [t.l, t.cy + 10]];
+        }
+      } else if (id === "w24") {
+        X = clL(Math.min(f.l, t.l) - 34);
+        pts = [[f.l, f.cy], [X, f.cy], [X, t.cy], [t.l, t.cy]];
+        cpo = { x: X, y: f.b + 20 };
+      } else if (id === "w30" && t5side && R.gpoort) {
+        yB = Math.max(f.b, t.b, R.gpoort.b) + 26;
+        pts = [[f.cx, f.b], [f.cx, yB], [t.cx, yB], [t.cx, t.b]];
+        chipSeg = 1;
+      }
+      if (!pts) {
+        if (t.t >= f.b - 4) {
+          if (Math.abs(f.cx - t.cx) < 14) pts = [[f.cx, f.b], [t.cx, t.t]];
+          else { midY = (f.b + t.t) / 2; pts = [[f.cx, f.b], [f.cx, midY], [t.cx, midY], [t.cx, t.t]]; }
+        } else if (t.l >= f.r) {
+          pts = [[f.r, f.cy], [t.l, t.cy]];
+        } else {
+          pts = [[f.l, f.cy], [t.r, t.cy]];
+        }
+      }
+      var cp;
+      if (cpo) cp = { x: Math.round(cpo.x), y: Math.round(cpo.y) };
+      else {
+        var best = 0, bl = -1;
+        for (var i = 0; i < pts.length - 1; i++) {
+          var L = Math.abs(pts[i + 1][0] - pts[i][0]) + Math.abs(pts[i + 1][1] - pts[i][1]);
+          if (L > bl) { bl = L; best = i; }
+        }
+        var seg = chipSeg >= 0 && chipSeg < pts.length - 1 ? chipSeg : best;
+        cp = { x: Math.round((pts[seg][0] + pts[seg + 1][0]) / 2), y: Math.round((pts[seg][1] + pts[seg + 1][1]) / 2) };
+      }
+      if (c.label) cp.x = Math.max(104, Math.min(w - 104, cp.x));
+      conns.push({ id: c.id, van: c.van, naar: c.naar, label: c.label || null, stip: !!c.stippel, assoc: !!c.assoc, pts: pts.map(function (p) { return [Math.round(p[0]), Math.round(p[1])]; }), cp: cp });
+    }
+    return { w: w, h: h, conns: conns };
+  }
+
+  /* ---------- overlays (arrows + connection chips) ---------- */
+  function svgEl(name, attrs) {
+    var e = document.createElementNS(SVG_NS, name);
+    for (var k in attrs) if (attrs[k] !== undefined) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function renderOverlays() {
+    var g = state.geo;
+    var aRoot = $("#arrows-layer"), cRoot = $("#chips-layer");
+    if (!aRoot || !cRoot) return;
+    aRoot.innerHTML = ""; cRoot.innerHTML = "";
+    if (!g) return;
+    var sel = state.sel, hov = state.hoverId;
+    var selEl = sel && sel.kind === "el" ? sel.id : null;
+    var selConn = sel && sel.kind === "conn" ? sel.id : null;
+    var isHot = function (c) { return c.van === hov || c.naar === hov || c.van === selEl || c.naar === selEl || c.id === selConn; };
+
+    /* arrows: hot connections on top, each with a white casing under the colored line */
+    var svg = svgEl("svg", { width: g.w, height: g.h });
+    svg.setAttribute("style", "position:absolute;top:0;left:0;pointer-events:none;z-index:1;overflow:visible;display:block");
+    var defs = svgEl("defs", {});
+    [["ahl", "#7D9BC1", 7], ["ahb", "#0B78BE", 7.5]].forEach(function (m) {
+      var mk = svgEl("marker", { id: m[0], viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: m[2], markerHeight: m[2], orient: "auto" });
+      mk.appendChild(svgEl("path", { d: "M0 0 L10 5 L0 10 Z", fill: m[1] }));
+      defs.appendChild(mk);
+    });
+    svg.appendChild(defs);
+    var ordered = g.conns.slice().sort(function (a, b) { return (isHot(a) ? 1 : 0) - (isHot(b) ? 1 : 0); });
+    ordered.forEach(function (c) {
+      var hot = isHot(c);
+      var d = "M" + c.pts.map(function (p) { return p[0] + " " + p[1]; }).join(" L ");
+      svg.appendChild(svgEl("path", {
+        d: d, fill: "none", stroke: "#fff", "stroke-width": hot ? 7 : 6.5,
+        "stroke-dasharray": c.stip ? "7 5" : undefined,
+        "stroke-linejoin": "round", "stroke-linecap": "round", opacity: ".9"
+      }));
+      svg.appendChild(svgEl("path", {
+        d: d, fill: "none", stroke: hot ? "#0B78BE" : "#7D9BC1", "stroke-width": hot ? 2.6 : 2,
+        "stroke-dasharray": c.stip ? "7 5" : undefined,
+        "stroke-linejoin": "round",
+        "marker-end": c.assoc ? undefined : "url(#" + (hot ? "ahb" : "ahl") + ")"
+      }));
+    });
+    aRoot.appendChild(svg);
+
+    /* chips */
+    var ccc = commentCounts();
+    var bubbleSvg = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg>';
+    g.conns.forEach(function (c) {
+      var cnt = ccc[c.id] || 0;
+      var active = selConn === c.id;
+      var b = document.createElement("button");
+      b.setAttribute("data-connchip", "1");
+      b.setAttribute("data-active", String(active));
+      b.setAttribute("data-conn", c.id);
+      b.setAttribute("title", "Verbinding " + c.id + (c.label ? " · " + c.label : "") + " — klik om te reageren");
+      b.setAttribute("aria-label", "Verbinding " + c.id);
+      var sup = cnt > 0 ? '<span style="position:absolute;top:-8px;right:-9px;min-width:16px;height:16px;border-radius:999px;background:#0B78BE;color:#fff;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 1px 3px rgba(27,75,137,.3)">' + cnt + '</span>' : '';
+      if (c.label) {
+        b.style.cssText = "position:absolute;left:" + c.cp.x + "px;top:" + c.cp.y + "px;transform:translate(-50%,-50%);pointer-events:auto;display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #B6C9DE;color:#1B4B89;font-size:10px;font-weight:700;letter-spacing:.05em;padding:3px 10px;border-radius:999px;cursor:pointer;box-shadow:0 1px 2px rgba(27,75,137,.08);white-space:nowrap";
+        b.innerHTML = esc(c.label) + sup;
+      } else {
+        b.style.cssText = "position:absolute;left:" + c.cp.x + "px;top:" + c.cp.y + "px;transform:translate(-50%,-50%);pointer-events:auto;display:flex;align-items:center;justify-content:center;width:24px;height:24px;background:#fff;border:1.5px solid " + (cnt ? "#0B78BE" : "#B6C9DE") + ";color:" + (cnt ? "#0B78BE" : "#8DA5BE") + ";border-radius:999px;cursor:pointer;box-shadow:0 1px 2px rgba(27,75,137,.08);padding:0";
+        b.innerHTML = bubbleSvg + sup;
+      }
+      b.addEventListener("click", function () { select("conn", c.id); });
+      cRoot.appendChild(b);
+    });
+  }
+
+  /* ---------- detail panel ---------- */
+  function buildPanelData() {
+    var sel = state.sel; if (!sel) return null;
+    var id = sel.id;
+    var out = { substappen: [], notities: [], invulpunten: [], werkRows: [], comments: [], votedK: false, votedKN: false };
+    if (sel.kind === "el" && D.elementen[id]) {
+      var el = D.elementen[id];
+      var inv = CFG.toonInvulpunten ? (el.invulpunten || []) : [];
+      out.panel = {
+        typeLabel: el.type + " · " + secLabelOf(id),
+        titel: el.titel,
+        handeling: el.handeling ? (el.handeling + (el.gate ? " · " + el.gate : "")) : "",
+        hasHandeling: !!el.handeling,
+        eigenaar: el.eigenaar || "—",
+        extern: el.extern || "", hasExtern: !!el.extern,
+        systemen: el.systemen || "", hasSys: !!el.systemen,
+        omschrijving: el.omschrijving || "", hasOms: !!el.omschrijving,
+        hasRollen: !!(el.handeling || el.eigenaar),
+        hasSub: !!(el.substappen && el.substappen.length),
+        hasNot: !!(el.notities && el.notities.length),
+        principes: el.principes || "", hasPrincipes: !!el.principes,
+        vervangt: el.vervangt || "", hasVervangt: !!el.vervangt,
+        hasHerleid: !!(el.principes || el.vervangt),
+        hasInv: inv.length > 0,
+        hasWerk: !!el.werk, werkIntro: el.werk ? el.werk.intro : "",
+        isConn: false, canVote: true, van: "", naar: "", conditie: ""
+      };
+      out.substappen = (el.substappen || []).map(function (st, i) { return { nr: i + 1, tekst: st.tekst, links: st.links || [], heeftLinks: !!(st.links && st.links.length) }; });
+      out.notities = el.notities || [];
+      out.invulpunten = inv;
+      out.werkRows = el.werk ? el.werk.rows : [];
+      var sg = slug(state.personName.trim());
+      if (sg) {
+        var own = state.votes.find(function (v) { return v.key === "vote:" + id + ":" + sg; });
+        if (own) { out.votedK = own.stem === "klopt"; out.votedKN = own.stem === "klopt_niet"; }
+      }
+    } else {
+      var c = D.verbindingen.find(function (v) { return v.id === id; });
+      if (c) {
+        out.panel = {
+          typeLabel: "Verbinding · " + secLabelOf(id),
+          titel: c.label ? "Verbinding " + c.id + " · " + c.label : "Verbinding " + c.id,
+          van: endNaam(c.van), naar: endNaam(c.naar),
+          conditie: c.label || "Geen (standaard doorstroom)",
+          handeling: "", hasHandeling: false, eigenaar: "", extern: "", hasExtern: false,
+          systemen: "", hasSys: false,
+          omschrijving: "Reageer op deze overgang, bijvoorbeeld als hier volgens jou een stap mist of de volgorde anders loopt." + (c.stippel ? " Dit is een gestippelde verbinding: bewaking, terugval of mutatie." : ""),
+          hasOms: true, hasRollen: false, hasSub: false, hasNot: false,
+          principes: "", hasPrincipes: false, vervangt: "", hasVervangt: false, hasHerleid: false, hasInv: false,
+          isConn: true, canVote: false, hasWerk: false, werkIntro: ""
+        };
+      }
+    }
+    if (!out.panel) return null;
+    out.comments = state.comments.filter(function (c) { return c.elementId === id; }).map(function (c) {
+      return { naam: c.naam, typeLabel: c.type, chipStyle: typeChipStyle(c.type), tijdF: fmtTijd(c.tijd), tekst: c.tekst };
+    });
+    return out;
+  }
+  function labelRow(label, value, w, valStyle) {
+    return '<div style="display:flex;gap:10px;font-size:12.5px;line-height:1.5"><span style="flex:0 0 ' + w + 'px;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;padding-top:2px">' + label + '</span><span style="' + (valStyle || "color:var(--ink)") + '">' + value + '</span></div>';
+  }
+  function buildPanelHTML() {
+    var pd = buildPanelData(); if (!pd) return "";
+    var p = pd.panel, s = state, h = "";
+    if (s.sheet) h += '<div id="drag-handle" style="position:sticky;top:0;background:#fff;padding:10px 0 4px;display:flex;justify-content:center;touch-action:none;z-index:2;border-radius:18px 18px 0 0"><span style="width:44px;height:5px;border-radius:999px;background:#D8E2EC"></span></div>';
+    h += '<div style="padding:16px 20px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">';
+    h += '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)">' + esc(p.typeLabel) + '</div>';
+    h += '<button id="panel-close" aria-label="Sluiten" style="flex:0 0 auto;width:30px;height:30px;border-radius:999px;border:none;background:var(--blue50);color:var(--navy);font-size:15px;font-weight:600;cursor:pointer;line-height:1">×</button></div>';
+    h += '<div style="padding:0 20px 26px">';
+    h += '<h2 data-panel-title="1" tabindex="-1" style="margin:7px 0 0;font-size:16.5px;font-weight:800;color:var(--navy);line-height:1.35;outline:none">' + esc(p.titel) + '</h2>';
+
+    if (p.isConn) {
+      h += '<div style="margin-top:14px;border:1px solid var(--hairline);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">';
+      h += labelRow("Van", esc(p.van), 92) + labelRow("Naar", esc(p.naar), 92);
+      h += labelRow("Conditie", esc(p.conditie), 92, "color:var(--ink);font-weight:600") + '</div>';
+    }
+    if (p.hasRollen) {
+      h += '<div style="margin-top:14px;border:1px solid var(--hairline);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">';
+      if (p.hasHandeling) h += labelRow("Handelingstype", esc(p.handeling), 128, "color:var(--navy);font-weight:700");
+      h += labelRow("Eigenaar", esc(p.eigenaar), 128);
+      if (p.hasExtern) h += labelRow("Extern betrokken", esc(p.extern), 128);
+      if (p.hasSys) h += labelRow("Systemen", esc(p.systemen), 128);
+      h += '</div>';
+    }
+    if (p.hasOms) h += '<p style="margin:14px 0 0;font-size:13px;line-height:1.65;color:var(--ink)">' + esc(p.omschrijving) + '</p>';
+
+    if (p.hasSub) {
+      h += '<div style="margin-top:16px"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">Substappen</div><div style="display:flex;flex-direction:column;gap:10px">';
+      pd.substappen.forEach(function (st) {
+        h += '<div style="display:flex;gap:10px"><span style="flex:0 0 22px;height:22px;border-radius:999px;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">' + st.nr + '</span><div style="font-size:12.5px;line-height:1.6;color:var(--ink)">' + esc(st.tekst);
+        if (st.heeftLinks) {
+          h += '<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">';
+          st.links.forEach(function (l) { h += '<a href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer" style="font-size:12px;font-weight:600;color:var(--blue);word-break:break-word">' + esc(l.label) + ' ↗</a>'; });
+          h += '</div>';
+        }
+        h += '</div></div>';
+      });
+      h += '</div></div>';
+    }
+    if (p.hasNot) {
+      h += '<div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">';
+      pd.notities.forEach(function (nt) { h += '<div style="background:var(--blue50);border:1px solid var(--blue100);border-radius:10px;padding:11px 14px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mainblue);margin-bottom:5px">' + esc(nt.label) + '</div><div style="font-size:12.5px;line-height:1.6;color:var(--ink)">' + esc(nt.tekst) + '</div></div>'; });
+      h += '</div>';
+    }
+    if (p.hasWerk) {
+      h += '<div style="margin-top:16px;border:1px solid var(--amberrand);background:#FFFCF3;border-radius:10px;padding:12px 14px">';
+      h += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)">Interne werkprocessen externe partners</span><span style="display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:999px">n.t.b.</span></div>';
+      h += '<p style="margin:0;font-size:12.5px;line-height:1.6;color:var(--ink)">' + esc(p.werkIntro) + '</p>';
+      h += '<div style="display:flex;flex-direction:column;gap:6px;margin-top:9px">';
+      pd.werkRows.forEach(function (wr) {
+        h += '<div style="border:1px dashed var(--amberrand);background:#fff;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.55;color:var(--ink)"><b style="color:var(--navy)">' + esc(wr.partij) + '</b><br>Huidige werkwijze: ' + esc(wr.huidig) + '<br>Gewenste aansluiting: ' + esc(wr.gewenst) + '</div>';
+      });
+      h += '</div></div>';
+    }
+    if (p.hasHerleid) {
+      h += '<div style="margin-top:16px;border:1px solid var(--hairline);border-radius:10px;padding:12px 14px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">Herleidbaarheid</div><div style="display:flex;flex-direction:column;gap:8px">';
+      if (p.hasPrincipes) h += labelRow("Principes", esc(p.principes), 128, "color:var(--navy);font-weight:700");
+      if (p.hasVervangt) h += labelRow("Vervangt of lost op (as-is)", esc(p.vervangt), 128);
+      h += '</div></div>';
+    }
+    if (p.hasInv) {
+      h += '<div style="margin-top:16px;background:var(--amberbg);border:1px solid var(--amberrand);border-radius:10px;padding:12px 14px"><div style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ambertekst);margin-bottom:8px">Invulpunt · nader te bepalen (n.t.b.)</div><ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:7px">';
+      pd.invulpunten.forEach(function (pt) { h += '<li style="font-size:12.5px;line-height:1.6;color:#5F4A15">' + esc(pt) + '</li>'; });
+      h += '</ul></div>';
+    }
+    if (p.canVote) {
+      h += '<div style="margin-top:20px;border-top:1px solid var(--hairline);padding-top:16px"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)">Snelvalidatie</div><p style="margin:7px 0 10px;font-size:12.5px;color:var(--ink)">Gaat dit onderdeel zo werken in de praktijk?</p>';
+      h += '<input type="text" data-name-input value="' + esc(s.personName) + '" placeholder="Je naam (verplicht om te stemmen of reageren)" aria-label="Je naam" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--ink);background:#fff">';
+      h += '<div style="display:flex;gap:8px;margin-top:9px"><button id="vote-k" data-vbtn="k" data-on="' + String(pd.votedK) + '" style="flex:1;border:1.5px solid var(--green);color:var(--greentekst);background:#fff;border-radius:9px;padding:9px 0;font-size:12.5px;font-weight:700;cursor:pointer">Klopt</button><button id="vote-kn" data-vbtn="kn" data-on="' + String(pd.votedKN) + '" style="flex:1;border:1.5px solid var(--red);color:var(--red);background:#fff;border-radius:9px;padding:9px 0;font-size:12.5px;font-weight:700;cursor:pointer">Klopt niet</button></div>';
+      if (s.voteWarn) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--red)">' + esc(s.voteWarn) + '</p>';
+      if (s.voteMsg) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--greentekst)">✓ ' + esc(s.voteMsg) + '</p>';
+      h += '<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">Eén stem per persoon per onderdeel; opnieuw stemmen overschrijft je eerdere stem. Stemtotalen zijn alleen zichtbaar in het reactieoverzicht.</p></div>';
+    }
+
+    /* comments */
+    h += '<div style="margin-top:20px;border-top:1px solid var(--hairline);padding-top:16px"><div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)">Reacties <span style="font-size:10.5px;background:var(--blue50);color:var(--mainblue);border:1px solid var(--blue200);border-radius:999px;padding:1px 8px;letter-spacing:0">' + pd.comments.length + '</span></div>';
+    if (pd.comments.length === 0) h += '<p style="margin:10px 0 0;font-size:12.5px;color:var(--muted)">Nog geen reacties op dit onderdeel. Jij kunt de eerste zijn.</p>';
+    h += '<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">';
+    pd.comments.forEach(function (c) {
+      h += '<div style="border:1px solid var(--hairline);border-radius:10px;padding:10px 12px"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:var(--navy)">' + esc(c.naam) + '</span><span style="' + c.chipStyle + '">' + esc(c.typeLabel) + '</span><span style="font-size:10.5px;color:var(--muted);margin-left:auto">' + esc(c.tijdF) + '</span></div><div style="font-size:12.5px;line-height:1.6;color:var(--ink);margin-top:5px;white-space:pre-wrap">' + esc(c.tekst) + '</div></div>';
+    });
+    h += '</div>';
+    h += '<div style="margin-top:14px;background:#F7FAFD;border:1px solid var(--hairline);border-radius:10px;padding:12px"><div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">Reactie plaatsen</div>';
+    h += '<input type="text" data-name-input value="' + esc(s.personName) + '" placeholder="Je naam (verplicht)" aria-label="Je naam" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--ink);background:#fff">';
+    h += '<select id="draft-type" aria-label="Type reactie" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:12.5px;color:var(--ink);background:#fff;margin-top:8px">';
+    ["Klopt niet", "Aanvulling", "Vraag"].forEach(function (o) { h += '<option value="' + o + '"' + (state.draftType === o ? ' selected' : '') + '>' + o + '</option>'; });
+    h += '</select>';
+    h += '<textarea id="draft-text" rows="3" placeholder="Je reactie…" aria-label="Je reactie" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--ink);background:#fff;margin-top:8px;resize:vertical;font-family:inherit">' + esc(s.draftText) + '</textarea>';
+    if (s.commentWarn) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--red)">' + esc(s.commentWarn) + '</p>';
+    if (s.commentMsg) h += '<p style="margin:8px 0 0;font-size:12px;font-weight:600;color:var(--greentekst)">✓ ' + esc(s.commentMsg) + '</p>';
+    h += '<button id="submit-comment" data-btn-primary="1" style="margin-top:10px;width:100%;background:var(--mainblue);color:#fff;border:none;border-radius:9px;padding:10px 0;font-size:12.5px;font-weight:700;cursor:pointer">Reactie plaatsen</button></div>';
+    h += '</div>';
+    return h;
+  }
+  function panelStyleStr() {
+    var s = state;
+    if (s.sheet) return "position:fixed;left:0;right:0;bottom:0;max-height:85vh;overflow-y:auto;background:#fff;border-radius:18px 18px 0 0;z-index:40;box-shadow:0 -14px 44px rgba(18,56,106,.25);transform:translateY(" + s.dragY + "px);transition:" + (s.dragY ? "none" : "transform .18s ease") + ";animation:glsheet .22s ease";
+    return "position:fixed;top:0;right:0;bottom:0;width:400px;max-width:94vw;overflow-y:auto;background:#fff;border-left:1px solid #DEE7F0;z-index:40;box-shadow:-14px 0 36px rgba(18,56,106,.12);animation:glpanel .2s ease";
+  }
+  function bindPanel(aside) {
+    var cb = $("#panel-close", aside); if (cb) cb.addEventListener("click", function () { closePanel(); });
+    aside.querySelectorAll("[data-name-input]").forEach(function (inp) {
+      inp.addEventListener("input", function (e) {
+        state.personName = e.target.value;
+        aside.querySelectorAll("[data-name-input]").forEach(function (o) { if (o !== e.target) o.value = e.target.value; });
+        var pd = buildPanelData();
+        var vk = $("#vote-k", aside), vkn = $("#vote-kn", aside);
+        if (vk && pd) vk.setAttribute("data-on", String(pd.votedK));
+        if (vkn && pd) vkn.setAttribute("data-on", String(pd.votedKN));
+      });
+    });
+    var vk = $("#vote-k", aside); if (vk) vk.addEventListener("click", function () { vote("klopt"); });
+    var vkn = $("#vote-kn", aside); if (vkn) vkn.addEventListener("click", function () { vote("klopt_niet"); });
+    var dt = $("#draft-type", aside); if (dt) dt.addEventListener("change", function (e) { state.draftType = e.target.value; });
+    var dtx = $("#draft-text", aside); if (dtx) dtx.addEventListener("input", function (e) { state.draftText = e.target.value; });
+    var sc = $("#submit-comment", aside); if (sc) sc.addEventListener("click", function () { submit(); });
+    var dh = $("#drag-handle", aside);
+    if (dh) {
+      dh.addEventListener("touchstart", function (e) { dragStartY = e.touches[0].clientY; }, { passive: true });
+      dh.addEventListener("touchmove", function (e) { var dy = e.touches[0].clientY - dragStartY; if (dy > 0) { state.dragY = dy; aside.style.cssText = panelStyleStr(); } }, { passive: true });
+      dh.addEventListener("touchend", function () { if (state.dragY > 110) { state.dragY = 0; closePanel(); } else { state.dragY = 0; aside.style.cssText = panelStyleStr(); } });
+    }
+  }
+  function renderPanel() {
+    var root = $("#panel-root");
+    var sel = state.sel;
+    var pd = sel ? buildPanelData() : null;
+    if (!sel || !pd) { root.innerHTML = ""; panelKey = null; panelDirty = false; return; }
+    var key = sel.kind + ":" + sel.id;
+    if (key !== panelKey || panelDirty || !root.firstChild) {
+      var backdrop = state.sheet ? '<div id="panel-backdrop" style="position:fixed;inset:0;background:rgba(18,56,106,.42);z-index:39;animation:glfade .18s ease"></div>' : '';
+      root.innerHTML = backdrop + '<aside role="dialog" aria-label="Detailpaneel" data-screen-label="Detailpaneel" style="' + panelStyleStr() + '">' + buildPanelHTML() + '</aside>';
+      var aside = root.querySelector("aside");
+      bindPanel(aside);
+      var bd = $("#panel-backdrop", root); if (bd) bd.addEventListener("click", function () { closePanel(); });
+      var t = aside.querySelector("[data-panel-title]"); if (t) t.focus({ preventScroll: true });
+      panelKey = key; panelDirty = false;
+    }
+  }
+
+  /* ---------- reactions overview ---------- */
+  function buildOverviewHTML() {
+    var s = state, h = "";
+    var fMatch = function (c) {
+      if (s.fSectie !== "alle" && secKeyOf(c.elementId) !== s.fSectie) return false;
+      if (s.fType !== "alle" && c.type !== s.fType) return false;
+      if (s.fOnaf && c.afgehandeld) return false;
+      return true;
+    };
+    var filtered = s.comments.filter(fMatch).slice().reverse();
+    var agg = {};
+    s.votes.forEach(function (v) {
+      if (s.fSectie !== "alle" && secKeyOf(v.elementId) !== s.fSectie) return;
+      if (!agg[v.elementId]) agg[v.elementId] = { k: 0, kn: 0 };
+      if (v.stem === "klopt") agg[v.elementId].k++; else agg[v.elementId].kn++;
+    });
+    var voteTotals = Object.keys(agg).map(function (id) {
+      var o = agg[id];
+      return { titel: (D.elementen[id] ? D.elementen[id].titel : elLabelOf(id)), secLabel: secLabelOf(id), k: o.k, kn: o.kn };
+    }).sort(function (a, b) { return (b.kn - a.kn) || (b.k - a.k); });
+
+    h += '<div style="background:#fff;border-radius:16px;max-width:960px;width:100%;margin:0 auto;box-shadow:var(--shadow-lg);padding:22px 24px 26px">';
+    h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0;font-size:18px;font-weight:800;color:var(--navy)">Alle reacties</h2><p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Voor de procesbegeleiders: reacties en stemtotalen uit de gedeelde opslag.</p></div>';
+    h += '<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="ov-refresh" style="border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer">Vernieuwen</button><button id="ov-csv" data-btn-primary="1" style="background:var(--mainblue);color:#fff;border:none;font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer;box-shadow:var(--shadow-xs)">Download CSV</button><button id="ov-close" aria-label="Sluiten" style="width:32px;height:32px;border-radius:999px;border:none;background:var(--blue50);color:var(--navy);font-size:16px;cursor:pointer;line-height:1">×</button></div></div>';
+
+    h += '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;padding:12px;background:#F7FAFD;border:1px solid var(--hairline);border-radius:10px">';
+    var secOpts = [["alle", "Alle secties"], ["1", "1 · Start en dossier"], ["2", "2 · Uitvraag"], ["3", "3 · Aanlevering en bewaking"], ["4", "4 · Parallelle controle"], ["5", "5 · Koppeling"], ["6", "6 · Bevestiging en afronding"]];
+    h += '<select id="f-sectie" aria-label="Filter op sectie" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--ink);background:#fff">';
+    secOpts.forEach(function (o) { h += '<option value="' + o[0] + '"' + (s.fSectie === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; });
+    h += '</select>';
+    h += '<select id="f-type" aria-label="Filter op type" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--ink);background:#fff">';
+    [["alle", "Alle typen"], ["Klopt niet", "Klopt niet"], ["Aanvulling", "Aanvulling"], ["Vraag", "Vraag"]].forEach(function (o) { h += '<option value="' + o[0] + '"' + (s.fType === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; });
+    h += '</select>';
+    h += '<label style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer"><input type="checkbox" id="f-onaf"' + (s.fOnaf ? ' checked' : '') + ' style="width:15px;height:15px;accent-color:#195AA6">Alleen onafgehandeld</label></div>';
+
+    if (s.ovLoading) h += '<div style="display:flex;align-items:center;gap:10px;padding:18px 4px;font-size:12.5px;color:var(--muted)"><span style="width:16px;height:16px;border:2.5px solid var(--blue100);border-top-color:var(--blue);border-radius:50%;animation:glspin .8s linear infinite"></span>Reacties laden…</div>';
+
+    h += '<div style="margin-top:16px"><div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)">Stemtotalen per element</div><p style="margin:3px 0 10px;font-size:11.5px;color:var(--muted)">Gesorteerd op meeste \'Klopt niet\' bovenaan. Totalen zijn alleen hier zichtbaar.</p>';
+    if (voteTotals.length > 0) {
+      h += '<div style="display:flex;flex-direction:column;gap:6px">';
+      voteTotals.forEach(function (v) {
+        h += '<div style="display:flex;align-items:center;gap:12px;border:1px solid var(--hairline);border-radius:9px;padding:8px 12px"><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.4">' + esc(v.titel) + '</div><div style="font-size:10.5px;color:var(--muted);margin-top:1px">' + esc(v.secLabel) + '</div></div><span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:var(--greenbg);color:var(--greentekst);border:1px solid #BBE3D2;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px">✓ ' + v.k + '</span><span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:var(--redbg);color:var(--red);border:1px solid #F2C6C6;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px">✕ ' + v.kn + '</span></div>';
+      });
+      h += '</div>';
+    } else if (!s.ovLoading) {
+      h += '<p style="margin:0;font-size:12.5px;color:var(--muted)">Nog geen stemmen uitgebracht.</p>';
+    }
+    h += '</div>';
+
+    h += '<div style="margin-top:20px"><div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px">Reacties (' + filtered.length + ')</div>';
+    if (filtered.length > 0) {
+      h += '<div style="display:flex;flex-direction:column;gap:8px">';
+      filtered.forEach(function (c) {
+        var rowStyle = "display:flex;gap:10px;border:1px solid #DEE7F0;border-radius:10px;padding:10px 12px;" + (c.afgehandeld ? "opacity:.55;background:#FAFCFE" : "background:#fff");
+        h += '<div style="' + rowStyle + '"><label style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding-top:2px" title="Markeer als afgehandeld"><input type="checkbox"' + (c.afgehandeld ? ' checked' : '') + ' data-done-key="' + esc(c.key) + '" aria-label="Afgehandeld" style="width:16px;height:16px;accent-color:#1F9D6B"></label><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:11px;font-weight:700;color:var(--mainblue);background:var(--blue50);border:1px solid var(--blue200);border-radius:999px;padding:2px 9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(elLabelOf(c.elementId)) + '</span><span style="font-size:10.5px;color:var(--muted)">' + esc(secLabelOf(c.elementId)) + '</span></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px"><span style="font-size:12px;font-weight:700;color:var(--navy)">' + esc(c.naam) + '</span><span style="' + typeChipStyle(c.type) + '">' + esc(c.type) + '</span><span style="font-size:10.5px;color:var(--muted);margin-left:auto">' + esc(fmtTijd(c.tijd)) + '</span></div><div style="font-size:12.5px;line-height:1.6;color:var(--ink);margin-top:5px;white-space:pre-wrap">' + esc(c.tekst) + '</div></div></div>';
+      });
+      h += '</div>';
+    } else if (!s.ovLoading) {
+      h += '<p style="margin:0;font-size:12.5px;color:var(--muted)">Nog geen reacties binnen dit filter. Jij kunt de eerste zijn.</p>';
+    }
+    h += '</div></div>';
+    return h;
+  }
+  function renderOverview() {
+    var root = $("#ov-root");
+    if (!state.ovOpen) { root.innerHTML = ""; return; }
+    root.innerHTML = '<div id="ov-backdrop" role="dialog" aria-label="Reactieoverzicht" data-screen-label="Reactieoverzicht" style="position:fixed;inset:0;z-index:50;background:rgba(18,56,106,.45);overflow-y:auto;padding:4vh 12px 6vh;animation:glfade .16s ease">' + buildOverviewHTML() + '</div>';
+    var bd = $("#ov-backdrop", root);
+    bd.addEventListener("click", function (e) { if (e.target === bd) { state.ovOpen = false; scheduleRender(); } });
+    $("#ov-close", root).addEventListener("click", function () { state.ovOpen = false; scheduleRender(); });
+    $("#ov-refresh", root).addEventListener("click", function () { loadAll(); });
+    $("#ov-csv", root).addEventListener("click", function () { exportCsvNow(); });
+    $("#f-sectie", root).addEventListener("change", function (e) { state.fSectie = e.target.value; scheduleRender(); });
+    $("#f-type", root).addEventListener("change", function (e) { state.fType = e.target.value; scheduleRender(); });
+    $("#f-onaf", root).addEventListener("change", function () { state.fOnaf = !state.fOnaf; scheduleRender(); });
+    root.querySelectorAll("[data-done-key]").forEach(function (chk) {
+      chk.addEventListener("change", function (e) { toggleDoneKey(e.target.getAttribute("data-done-key")); });
+    });
+  }
+
+  /* ---------- toast + banner ---------- */
+  function renderToast() {
+    var root = $("#toast-root");
+    root.innerHTML = state.toast ? '<div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 20px;border-radius:999px;font-size:12.5px;font-weight:600;z-index:60;box-shadow:var(--shadow-lg);animation:glfade .2s ease;white-space:nowrap">' + esc(state.toast) + '</div>' : "";
+  }
+  function renderBanner() {
+    var slot = $("#banner-slot");
+    slot.innerHTML = state.fallback ? '<div role="alert" style="background:var(--amberbg);border-bottom:1px solid var(--amberrand);color:var(--ambertekst);padding:10px 16px;font-size:12.5px;font-weight:600;text-align:center">Gedeelde opslag is niet beschikbaar in deze omgeving. Reacties worden tijdelijk in deze sessie bewaard.</div>' : "";
+  }
+
+  /* ---------- main render (cheap DOM updates) ---------- */
+  function scheduleRender() { if (rraf) return; rraf = requestAnimationFrame(function () { rraf = null; render(); }); }
+  function infoOpen(which) {
+    var v = state["info" + which];
+    return v === null ? CFG.infoblokkenStandaardOpen : v;
+  }
+  function render() {
+    if (!state.ready) return;
+    renderBanner();
+
+    /* header button label */
+    var lbl = $("#btn-overview-label");
+    if (lbl) lbl.textContent = state.loading ? "Alle reacties (…)" : "Alle reacties (" + state.comments.length + ")";
+
+    /* info blocks / legend collapse */
+    ["P", "S", "V", "R"].forEach(function (w) {
+      var open = infoOpen(w);
+      $("#info-" + w.toLowerCase() + "-body").style.display = open ? "" : "none";
+      $("#info-" + w.toLowerCase() + "-chev").textContent = open ? "▲ Inklappen" : "▼ Uitklappen";
+      $("#info-" + w.toLowerCase() + "-toggle").setAttribute("aria-expanded", String(open));
+    });
+    var legOpen = state.legOpen === null ? CFG.legendaStandaardOpen : state.legOpen;
+    $("#leg-body").style.display = legOpen ? "" : "none";
+    $("#leg-chev").textContent = legOpen ? "▲ Inklappen" : "▼ Uitklappen";
+    $("#leg-toggle").setAttribute("aria-expanded", String(legOpen));
+
+    /* nav active */
+    document.querySelectorAll("[data-navchip]").forEach(function (n) {
+      n.setAttribute("data-active", String(state.activeSec === parseInt(n.getAttribute("data-sec"), 10)));
+    });
+
+    /* inner margin for desktop side panel */
+    $("#inner").style.marginRight = (state.sel && !state.sheet) ? "400px" : "0";
+
+    /* element selected state + comment badges */
+    var ccc = commentCounts();
+    document.querySelectorAll("[data-el]").forEach(function (node) {
+      var id = node.getAttribute("data-el");
+      node.setAttribute("data-selected", String(!!(state.sel && state.sel.kind === "el" && state.sel.id === id)));
+    });
+    document.querySelectorAll("[data-cbadge]").forEach(function (b) {
+      var id = b.getAttribute("data-cbadge"); var n = ccc[id] || 0;
+      b.classList.toggle("on", n > 0);
+      var cnt = b.querySelector("[data-cnt]"); if (cnt) cnt.textContent = n;
+    });
+
+    renderOverlays();
+    renderPanel();
+    renderOverview();
+    renderToast();
+
+    /* body scroll lock */
+    var lock = !!((state.sel && state.sheet) || state.ovOpen);
+    if (lock !== wasLock) { wasLock = lock; document.body.style.overflow = lock ? "hidden" : ""; }
+  }
+
+  /* ---------- static content injection + wiring ---------- */
+  function injectBadges() {
+    document.querySelectorAll("[data-el]").forEach(function (node) {
+      var id = node.getAttribute("data-el");
+      var pos = BADGE_POS[id] || (DIAMONDS[id] ? "bottom:2px;left:calc(50% + 18px)" : "bottom:-11px;right:10px");
+      var cb = document.createElement("span");
+      cb.setAttribute("data-cbadge", id);
+      cb.style.cssText = "position:absolute;" + pos;
+      cb.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.5-.8L3 20l1-5.4a8.4 8.4 0 1 1 17-3.1Z"></path></svg><span data-cnt>0</span>';
+      /* the start event's badge sits next to the circle, inside its relative wrapper */
+      var host = id === "tstart" ? (node.querySelector("[data-anchor]") || node).parentElement : node;
+      host.appendChild(cb);
+    });
+  }
+  function injectInfoLists() {
+    var pb = $("#info-p-list");
+    D.principes.forEach(function (p) {
+      var d = document.createElement("div");
+      d.style.cssText = "display:flex;gap:10px;align-items:flex-start";
+      d.innerHTML = '<span style="flex:0 0 auto;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:999px;margin-top:2px">' + esc(p.code) + '</span><div style="font-size:12.5px;line-height:1.6;color:var(--ink)"><b style="color:var(--navy)">' + esc(p.titel) + '.</b> ' + esc(p.tekst) + '</div>';
+      pb.appendChild(d);
+    });
+    var sb = $("#info-s-list");
+    D.statussen.forEach(function (st) {
+      var sp = document.createElement("span");
+      sp.style.cssText = "display:inline-flex;align-items:baseline;gap:7px;border:1px solid var(--hairline);background:#fff;border-radius:999px;padding:4.5px 12px;font-size:11.5px;font-weight:600;color:var(--navy);line-height:1.3";
+      sp.innerHTML = '<b style="color:var(--blue)">' + st.n + '</b><span>' + esc(st.naam) + '</span><span style="font-size:10px;color:var(--muted);font-weight:600">' + esc(st.eigenaar) + '</span>';
+      sb.appendChild(sp);
+    });
+    var vb = $("#info-v-list");
+    D.verdwijnt.forEach(function (v) {
+      var li = document.createElement("li");
+      li.style.cssText = "font-size:13px;line-height:1.55;color:var(--ink)";
+      li.textContent = v;
+      vb.appendChild(li);
+    });
+    var rb = $("#info-r-list");
+    (D.randvoorwaarden || []).forEach(function (r) {
+      var li = document.createElement("li");
+      li.style.cssText = "font-size:13px;line-height:1.55;color:var(--ink)";
+      li.innerHTML = esc(r.tekst) + (r.ntb ? ' <span style="display:inline-flex;align-items:center;background:var(--amberbg);color:var(--amber);border:1px solid var(--amberrand);font-size:9.5px;font-weight:700;padding:1px 8px;border-radius:999px;vertical-align:middle">n.t.b.</span>' : '');
+      rb.appendChild(li);
+    });
+  }
+  function wireStatic() {
+    [["P", "p"], ["S", "s"], ["V", "v"], ["R", "r"]].forEach(function (w) {
+      $("#info-" + w[1] + "-toggle").addEventListener("click", function () {
+        state["info" + w[0]] = !infoOpen(w[0]); scheduleRender();
+      });
+    });
+    $("#leg-toggle").addEventListener("click", function () { var cur = state.legOpen === null ? CFG.legendaStandaardOpen : state.legOpen; state.legOpen = !cur; scheduleRender(); });
+    $("#btn-overview").addEventListener("click", function () { state.ovOpen = true; scheduleRender(); loadAll(); });
+
+    document.querySelectorAll("[data-navchip]").forEach(function (n) {
+      n.addEventListener("click", function () {
+        var el = document.getElementById("sec" + n.getAttribute("data-sec"));
+        if (el) window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().top - 58, behavior: "smooth" });
+      });
+    });
+
+    document.querySelectorAll("[data-el]").forEach(function (node) {
+      var id = node.getAttribute("data-el");
+      node.addEventListener("click", function () { select("el", id); });
+      node.addEventListener("mouseenter", function () { state.hoverId = id; renderOverlays(); });
+      node.addEventListener("mouseleave", function () { state.hoverId = null; renderOverlays(); });
+      node.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select("el", id); } });
+    });
+  }
+
+  /* ---------- lifecycle ---------- */
+  function onResize() {
+    var sheet = window.innerWidth < 1024;
+    if (sheet !== state.sheet) { state.sheet = sheet; scheduleRender(); }
+    measure();
+  }
+  function onScroll() {
+    if (sraf) return;
+    sraf = requestAnimationFrame(function () {
+      sraf = null;
+      var act = 1;
+      for (var n = 1; n <= 6; n++) {
+        var el = document.getElementById("sec" + n);
+        if (el && el.getBoundingClientRect().top <= 150) act = n;
+      }
+      if (act !== state.activeSec) { state.activeSec = act; scheduleRender(); }
+    });
+  }
+  function onKey(e) {
+    if (e.key === "Escape") {
+      if (state.ovOpen) { state.ovOpen = false; scheduleRender(); }
+      else if (state.sel) { closePanel(); }
+    }
+  }
+  function init() {
+    injectBadges();
+    injectInfoLists();
+    wireStatic();
+    state.ready = true;
+    state.sheet = window.innerWidth < 1024;
+    applyVariants();
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("keydown", onKey);
+    var cv = $("#bpm-canvas");
+    if (cv && window.ResizeObserver) { var ro = new ResizeObserver(function () { measure(); }); ro.observe(cv); }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); });
+    setTimeout(measure, 500);
+    setTimeout(measure, 1500);
+    render();
+    measure();
+    initStorage();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+</body>
+</html>
