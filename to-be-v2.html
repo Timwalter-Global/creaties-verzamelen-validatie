@@ -985,7 +985,7 @@ window.PROCESDATA_TOBE_V2 = {
   /* ---------- storage (Supabase REST + memory fallback) ---------- */
   var SUPA_URL = "https://oenfktekinmrsehfzdva.supabase.co";
   var SUPA_KEY = "sb_publishable_mgbVOTLLpxUBvnv8BOXDKQ_cPN9AJxx"; /* publishable key: veilig om client-side te gebruiken; RLS beschermt de data */
-  var T_COMMENTS = "comments_tobe_v2", T_VOTES = "votes_tobe_v2"; /* aparte tabellen, zodat to-be-reacties niet mengen met de as-is */
+  var T_COMMENTS = "to_be_comments", T_VOTES = "to_be_votes"; /* aparte tabellen, zodat to-be-reacties niet mengen met de as-is */
   function supaFetch(path, opts) {
     opts = opts || {};
     var headers = Object.assign({
