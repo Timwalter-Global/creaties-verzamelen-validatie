@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaartje toevoegen · Feedbackbord</title>
+<link rel="stylesheet" href="/stijl.css">
+<style>
+  body {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 1.2rem 1.1rem 3rem;
+  }
+  h1 {
+    font-size: 1.25rem;
+    font-style: italic;
+    margin: 0 0 0.2rem;
+  }
+  .sub { margin: 0 0 1.2rem; }
+
+  .veld { margin-bottom: 1.1rem; }
+  .veld > .label { display: block; margin-bottom: 0.45rem; }
+
+  .rol-knoppen { display: flex; gap: 10px; }
+  .rol-knop {
+    flex: 1;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 1rem 0.5rem;
+    font-size: 0.78rem;
+    box-shadow: 0 2px 5px rgba(60, 50, 20, 0.15);
+  }
+  .rol-knop.geel  { background: var(--postit-geel); }
+  .rol-knop.blauw { background: var(--postit-blauw); }
+  .rol-knop.gekozen { border-color: var(--inkt); }
+
+  select, textarea {
+    width: 100%;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: var(--inkt);
+    background: #fff;
+    border: 1px solid var(--lijn);
+    border-radius: 10px;
+    padding: 0.7em 0.8em;
+  }
+  textarea { min-height: 6em; resize: vertical; }
+
+  .uitleg { margin-top: 0.4rem; font-size: 0.85rem; color: var(--gedempt); font-style: italic; }
+  .teller { text-align: right; margin-top: 0.3rem; }
+  .teller.vol { color: #a33232; }
+
+  #verstuur {
+    width: 100%;
+    background: var(--inkt);
+    color: #fff;
+    border: none;
+    font-size: 0.85rem;
+    padding: 1em;
+    border-radius: 10px;
+  }
+
+  #bevestiging {
+    display: none;
+    margin-top: 1rem;
+    background: var(--groen-bg);
+    color: var(--groen-tekst);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  #fout {
+    display: none;
+    margin-top: 1rem;
+    background: var(--rood-bg);
+    color: var(--rood-tekst);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .bord-link { display: inline-block; margin-top: 1.4rem; font-size: 0.85rem; color: var(--gedempt); }
+
+  #qr-blok { text-align: center; margin: 0 0 1.4rem; }
+  #qr-blok img { width: 130px; height: 130px; background: #fff; padding: 6px; border-radius: 10px; border: 1px solid var(--lijn); }
+</style>
+</head>
+<body>
+  <h1>Feedbackkaartje</h1>
+  <p class="sub label">Anoniem · verschijnt direct op het bord</p>
+
+  <div id="qr-blok">
+    <img src="/qr.svg" alt="QR-code naar deze pagina">
+    <div class="label" style="margin-top:0.4rem">Scan om mee te doen</div>
+  </div>
+
+  <form id="formulier">
+    <div class="veld">
+      <span class="label">Jouw rol</span>
+      <div class="rol-knoppen">
+        <button type="button" class="rol-knop geel" data-rol="accountmanager">Accountmanager</button>
+        <button type="button" class="rol-knop blauw" data-rol="teammanager">Teammanager</button>
+      </div>
+    </div>
+
+    <div class="veld">
+      <label class="label" for="tabblad">Tabblad / onderdeel</label>
+      <select id="tabblad" required>
+        <option value="" disabled selected>Kies een tabblad…</option>
+      </select>
+    </div>
+
+    <div class="veld">
+      <label class="label" for="categorie">Categorie</label>
+      <select id="categorie" required>
+        <option value="" disabled selected>Kies een categorie…</option>
+      </select>
+      <div class="uitleg" id="categorie-uitleg"></div>
+    </div>
+
+    <div class="veld">
+      <label class="label" for="tekst">Jouw feedback</label>
+      <textarea id="tekst" maxlength="180" placeholder="Kort en concreet, max 180 tekens" required></textarea>
+      <div class="teller label" id="teller">0 / 180</div>
+    </div>
+
+    <button id="verstuur" type="submit">Plaats op het bord</button>
+  </form>
+
+  <div id="bevestiging">Kaartje geplaatst! Het staat nu op het bord.</div>
+  <div id="fout"></div>
+
+  <a class="bord-link" href="/">Naar het bord →</a>
+
+<script src="/join.js"></script>
+</body>
+</html>
