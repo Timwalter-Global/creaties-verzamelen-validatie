@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Feedbackbord · Testsessie</title>
-<link rel="stylesheet" href="/stijl.css">
+<link rel="stylesheet" href="stijl.css">
 <style>
   body { padding: 1rem 1.2rem 2rem; }
 
@@ -83,7 +83,7 @@
     border: 1px solid var(--lijn);
     border-radius: 8px;
     min-height: 96px;
-    padding: 6px;
+    padding: 6px 6px 26px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -91,17 +91,22 @@
     position: relative;
   }
   .cel.sleep-doel { outline: 2px dashed var(--oranje); outline-offset: -3px; }
-  .cel .meer {
-    align-self: center;
-    font-family: ui-monospace, Menlo, Consolas, monospace;
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: var(--gedempt);
-    background: #fff;
+  .cel-plus {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border-radius: 50%;
     border: 1px solid var(--lijn);
-    border-radius: 999px;
-    padding: 0.15em 0.7em;
+    background: #fff;
+    color: var(--gedempt);
+    font-size: 0.85rem;
+    line-height: 1;
+    font-weight: 700;
   }
+  .cel-plus:hover { color: var(--inkt); border-color: var(--gedempt); }
   .kaart .verwijder {
     display: none;
     position: absolute;
@@ -179,6 +184,57 @@
     z-index: 20;
   }
   #melding.zichtbaar { opacity: 1; }
+
+  .modal-achtergrond {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(40, 35, 25, 0.55);
+    z-index: 15;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-achtergrond.open { display: flex; }
+  .modal-kaart {
+    background: var(--achtergrond);
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+  .modal-kaart .rol-knoppen { display: flex; gap: 8px; margin-bottom: 0.8rem; }
+  .modal-kaart .rol-knop {
+    flex: 1;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 0.7rem 0.4rem;
+    font-size: 0.7rem;
+    box-shadow: 0 2px 5px rgba(60, 50, 20, 0.15);
+  }
+  .modal-kaart .rol-knop.geel  { background: var(--postit-geel); }
+  .modal-kaart .rol-knop.blauw { background: var(--postit-blauw); }
+  .modal-kaart .rol-knop.gekozen { border-color: var(--inkt); }
+  .modal-kaart textarea {
+    width: 100%;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: var(--inkt);
+    border: 1px solid var(--lijn);
+    border-radius: 8px;
+    padding: 0.6em 0.7em;
+    min-height: 5em;
+    resize: vertical;
+  }
+  .modal-kaart .teller { text-align: right; margin-top: 0.25rem; }
+  .modal-kaart .modal-acties {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+  }
+  .modal-kaart #modal-plaats { background: var(--inkt); color: #fff; border-color: var(--inkt); }
 </style>
 </head>
 <body>
@@ -187,7 +243,7 @@
     <div class="join-info">
       <span class="label">Meedoen:</span>
       <code id="join-url"></code>
-      <img id="join-qr" src="/qr.svg" alt="QR-code naar invoerscherm" width="52" height="52">
+      <img id="join-qr" src="qr.svg" alt="QR-code naar invoerscherm" width="52" height="52">
     </div>
   </header>
 
@@ -197,14 +253,30 @@
     <button id="knop-stickeren">Stickerfase starten</button>
     <button id="knop-bevriezen">Bord bevriezen</button>
     <button id="knop-verzamelen">Terug naar verzamelen</button>
-    <a href="/api/export.csv" download><button type="button">Export CSV</button></a>
-    <a href="/api/export.json" download><button type="button">Export JSON</button></a>
+    <a href="api/export.csv" download><button type="button">Export CSV</button></a>
+    <a href="api/export.json" download><button type="button">Export JSON</button></a>
     <span class="label" style="align-self:center">Facilitator: kaartjes verslepen om te verplaatsen, × om te verwijderen</span>
   </div>
 
   <div class="bord" id="bord"></div>
 
-  <a id="plus-knop" href="/join">+ Kaartje</a>
+  <a id="plus-knop" href="join">+ Kaartje</a>
+
+  <div id="kaart-modal" class="modal-achtergrond">
+    <form class="modal-kaart" id="modal-formulier">
+      <div class="label" id="modal-waar" style="margin-bottom:0.7rem"></div>
+      <div class="rol-knoppen">
+        <button type="button" class="rol-knop geel" data-rol="accountmanager">Accountmanager</button>
+        <button type="button" class="rol-knop blauw" data-rol="teammanager">Teammanager</button>
+      </div>
+      <textarea id="modal-tekst" maxlength="180" placeholder="Jouw feedback, max 180 tekens" required></textarea>
+      <div class="teller label" id="modal-teller">0 / 180</div>
+      <div class="modal-acties">
+        <button type="button" id="modal-sluit">Annuleren</button>
+        <button type="submit" id="modal-plaats">Plaats kaartje</button>
+      </div>
+    </form>
+  </div>
 
   <div id="overlay">
     <div class="paneel">
@@ -219,6 +291,6 @@
 
   <div id="melding"></div>
 
-<script src="/bord.js"></script>
+<script src="bord.js"></script>
 </body>
 </html>

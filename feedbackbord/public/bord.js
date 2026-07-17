@@ -1,8 +1,9 @@
 (() => {
   const FACILITATOR = new URLSearchParams(location.search).get('facilitator') === '1';
-  const MAX_ZICHTBAAR_PER_CEL = 3;
   const PILL_KLASSEN = ['pill-groen', 'pill-rood', 'pill-grijs', 'pill-blauw', 'pill-amber'];
   const KORTE_KOLOM = ['Werkt goed', 'Bug / error', 'Data', 'Feature', 'Onduidelijk'];
+  // Basispad zodat de app zowel op / als achter een pad (edge function) werkt.
+  const BASE = location.pathname.replace(/[^/]*$/, '');
 
   let token = localStorage.getItem('feedbackbord-token');
   if (!token) {
@@ -14,16 +15,19 @@
   const faseBanner = document.getElementById('fase-banner');
   const overlay = document.getElementById('overlay');
   const meldingEl = document.getElementById('melding');
+  const modal = document.getElementById('kaart-modal');
 
   let data = null;
-  let openCel = null; // {tabblad, categorie} van de uitvergrote cel
+  let openCel = null;    // {tabblad, categorie} van de uitvergrote cel
+  let modalCel = null;   // {tabblad, categorie} waarvoor het invulkaartje open staat
+  let modalRol = null;
 
   if (FACILITATOR) {
     document.body.classList.add('facilitator');
     document.getElementById('facilitator-balk').classList.add('actief');
   }
-  document.getElementById('join-url').textContent =
-    location.origin.replace(/^https?:\/\//, '') + '/join';
+  document.getElementById('join-url').textContent = location.host + BASE + 'join';
+  document.getElementById('plus-knop').href = BASE + 'join';
 
   let meldingTimer;
   function meld(tekst) {
@@ -39,14 +43,15 @@
     return ((Math.abs(h) % 50) / 10 - 2.5).toFixed(1);
   }
 
-  async function apiCall(url, opties) {
-    const res = await fetch(url + (FACILITATOR ? (url.includes('?') ? '&' : '?') + 'facilitator=1' : ''), opties);
+  async function apiCall(pad, opties) {
+    const url = BASE + pad + (FACILITATOR ? (pad.includes('?') ? '&' : '?') + 'facilitator=1' : '');
+    const res = await fetch(url, opties);
     const body = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(body.fout || 'Er ging iets mis.');
     return body;
   }
 
-  function maakKaartEl(kaart, groot) {
+  function maakKaartEl(kaart) {
     const el = document.createElement('div');
     el.className = `kaart kaart-${kaart.rol}`;
     el.style.transform = `rotate(${rotatie(kaart.id)}deg)`;
@@ -86,7 +91,7 @@
         e.stopPropagation();
         if (!confirm('Dit kaartje verwijderen?')) return;
         try {
-          await apiCall(`/api/kaarten/${kaart.id}`, { method: 'DELETE' });
+          await apiCall(`api/kaarten/${kaart.id}`, { method: 'DELETE' });
           await vernieuw();
         } catch (err) { meld(err.message); }
       });
@@ -103,7 +108,7 @@
       el.addEventListener('click', async e => {
         e.stopPropagation();
         try {
-          const uit = await apiCall(`/api/kaarten/${kaart.id}/sticker`, {
+          const uit = await apiCall(`api/kaarten/${kaart.id}/sticker`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token })
@@ -119,18 +124,28 @@
   function maakCel(tabblad, categorie, kaarten) {
     const cel = document.createElement('div');
     cel.className = 'cel';
-    const zichtbaar = kaarten.slice(0, MAX_ZICHTBAAR_PER_CEL);
-    zichtbaar.forEach(k => cel.appendChild(maakKaartEl(k, false)));
-    if (kaarten.length > MAX_ZICHTBAAR_PER_CEL) {
-      const meer = document.createElement('span');
-      meer.className = 'meer';
-      meer.textContent = `+${kaarten.length - MAX_ZICHTBAAR_PER_CEL} meer`;
-      cel.appendChild(meer);
+    // Alle kaartjes tonen; de cel (en daarmee de hele rij) groeit automatisch mee.
+    kaarten.forEach(k => cel.appendChild(maakKaartEl(k)));
+
+    if (data.fase !== 'bevroren') {
+      const plus = document.createElement('button');
+      plus.type = 'button';
+      plus.className = 'cel-plus';
+      plus.textContent = '+';
+      plus.title = `Kaartje toevoegen bij ${tabblad} · ${categorie}`;
+      plus.addEventListener('click', e => {
+        e.stopPropagation();
+        openModal(tabblad, categorie);
+      });
+      cel.appendChild(plus);
     }
-    cel.addEventListener('click', () => {
-      openCel = { tabblad, categorie };
-      renderOverlay();
-    });
+
+    if (kaarten.length > 0) {
+      cel.addEventListener('click', () => {
+        openCel = { tabblad, categorie };
+        renderOverlay();
+      });
+    }
 
     if (FACILITATOR) {
       cel.addEventListener('dragover', e => { e.preventDefault(); cel.classList.add('sleep-doel'); });
@@ -141,7 +156,7 @@
         const id = e.dataTransfer.getData('text/plain');
         if (!id) return;
         try {
-          await apiCall(`/api/kaarten/${id}`, {
+          await apiCall(`api/kaarten/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ tabblad, categorie })
@@ -197,6 +212,68 @@
     }
   }
 
+  // ------------------------------------------------------------------
+  // Invulkaartje (plusje in een cel)
+  // ------------------------------------------------------------------
+
+  const modalTekst = document.getElementById('modal-tekst');
+  const modalTeller = document.getElementById('modal-teller');
+
+  function openModal(tabblad, categorie) {
+    modalCel = { tabblad, categorie };
+    modalRol = null;
+    document.getElementById('modal-waar').textContent = `${tabblad} · ${categorie}`;
+    document.querySelectorAll('#kaart-modal .rol-knop').forEach(k => k.classList.remove('gekozen'));
+    modalTekst.value = '';
+    modalTeller.textContent = '0 / 180';
+    modal.classList.add('open');
+    modalTekst.focus();
+  }
+
+  function sluitModal() {
+    modalCel = null;
+    modal.classList.remove('open');
+  }
+
+  document.querySelectorAll('#kaart-modal .rol-knop').forEach(knop => {
+    knop.addEventListener('click', () => {
+      modalRol = knop.dataset.rol;
+      document.querySelectorAll('#kaart-modal .rol-knop').forEach(k =>
+        k.classList.toggle('gekozen', k === knop));
+    });
+  });
+  modalTekst.addEventListener('input', () => {
+    modalTeller.textContent = `${modalTekst.value.length} / 180`;
+  });
+  document.getElementById('modal-sluit').addEventListener('click', sluitModal);
+  modal.addEventListener('click', e => { if (e.target === modal) sluitModal(); });
+
+  document.getElementById('modal-formulier').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!modalCel) return;
+    if (!modalRol) return meld('Kies eerst je rol (geel of blauw).');
+    if (!modalTekst.value.trim()) return meld('Vul eerst je feedback in.');
+    try {
+      await apiCall('api/kaarten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rol: modalRol,
+          tabblad: modalCel.tabblad,
+          categorie: modalCel.categorie,
+          tekst: modalTekst.value
+        })
+      });
+      sluitModal();
+      meld('Kaartje geplaatst!');
+      await vernieuw();
+    } catch (err) { meld(err.message); }
+  });
+
+  // ------------------------------------------------------------------
+  // Uitvergrote cel
+  // ------------------------------------------------------------------
+
   function renderOverlay() {
     if (!openCel) { overlay.classList.remove('open'); return; }
     const { tabblad, categorie } = openCel;
@@ -211,7 +288,7 @@
     kolomEl.appendChild(pill);
     const houder = document.getElementById('overlay-kaarten');
     houder.innerHTML = '';
-    kaarten.forEach(k => houder.appendChild(maakKaartEl(k, true)));
+    kaarten.forEach(k => houder.appendChild(maakKaartEl(k)));
     if (kaarten.length === 0) {
       openCel = null;
     }
@@ -229,7 +306,7 @@
   if (FACILITATOR) {
     const zetFase = fase => async () => {
       try {
-        await apiCall('/api/fase', {
+        await apiCall('api/fase', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ fase })
@@ -244,7 +321,7 @@
 
   async function vernieuw() {
     try {
-      const res = await fetch(`/api/bord?token=${encodeURIComponent(token)}`);
+      const res = await fetch(`${BASE}api/bord?token=${encodeURIComponent(token)}`);
       if (!res.ok) return;
       data = await res.json();
     } catch (err) {

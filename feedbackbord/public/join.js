@@ -1,4 +1,5 @@
 (() => {
+  const BASE = location.pathname.replace(/[^/]*$/, '');
   const UITLEG = {
     'Werkt goed': 'Iets dat prettig werkt en zo moet blijven.',
     'Bug / error': 'Er gaat echt iets stuk of er verschijnt een foutmelding.',
@@ -18,11 +19,17 @@
 
   let gekozenRol = null;
 
-  fetch('/api/bord').then(r => r.json()).then(data => {
+  fetch(BASE + 'api/bord').then(r => r.json()).then(data => {
     data.tabbladen.forEach(t => tabbladSelect.appendChild(new Option(t, t)));
     data.categorieen.forEach(c => categorieSelect.appendChild(new Option(c, c)));
+    const qs = new URLSearchParams(location.search);
+    if (data.tabbladen.includes(qs.get('tabblad'))) tabbladSelect.value = qs.get('tabblad');
+    if (data.categorieen.includes(qs.get('categorie'))) {
+      categorieSelect.value = qs.get('categorie');
+      uitlegEl.textContent = UITLEG[categorieSelect.value] || '';
+    }
     if (data.fase === 'bevroren') toonFout('Het bord is bevroren; er kunnen geen kaartjes meer bij.');
-  }).catch(() => toonFout('Kan de server niet bereiken. Zit je op hetzelfde wifi-netwerk?'));
+  }).catch(() => toonFout('Kan de server niet bereiken.'));
 
   document.querySelectorAll('.rol-knop').forEach(knop => {
     knop.addEventListener('click', () => {
@@ -53,7 +60,7 @@
     if (!gekozenRol) return toonFout('Kies eerst je rol (geel of blauw).');
 
     try {
-      const res = await fetch('/api/kaarten', {
+      const res = await fetch(BASE + 'api/kaarten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
